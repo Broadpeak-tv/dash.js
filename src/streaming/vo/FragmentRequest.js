@@ -61,6 +61,7 @@ class FragmentRequest {
         this.delayLoadingTime = NaN;
         this.responseType = 'arraybuffer';
         this.representationId = null;
+        this.segment = null;
     }
 
     isInitializationRequest() {

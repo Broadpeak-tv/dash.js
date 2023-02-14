@@ -53,6 +53,7 @@ import SchemeLoaderFactory from './net/SchemeLoaderFactory';
 import VideoModel from './models/VideoModel';
 import CmcdModel from './models/CmcdModel';
 import CmsdModel from './models/CmsdModel';
+import S4SModel from './models/S4SModel';
 import DOMStorage from './utils/DOMStorage';
 import Debug from './../core/Debug';
 import Errors from './../core/errors/Errors';
@@ -158,6 +159,7 @@ function MediaPlayer() {
         manifestModel,
         cmcdModel,
         cmsdModel,
+        s4sModel,
         videoModel,
         uriFragmentModel,
         domStorage,
@@ -338,6 +340,8 @@ function MediaPlayer() {
             cmcdModel = CmcdModel(context).getInstance();
 
             cmsdModel = CmsdModel(context).getInstance();
+
+            s4sModel = S4SModel(context).getInstance();
 
             dashMetrics = DashMetrics(context).getInstance({
                 settings: settings
@@ -2088,6 +2092,7 @@ function MediaPlayer() {
         textController.reset();
         cmcdModel.reset();
         cmsdModel.reset();
+        s4sModel.reset();
     }
 
     function _createPlaybackControllers() {
@@ -2188,6 +2193,14 @@ function MediaPlayer() {
             playbackController
         });
 
+        s4sModel.setConfig({
+            cmcdModel,
+            abrController,
+            baseURLController,
+            streamController,
+            urlUtils: URLUtils(context).getInstance()
+        });
+
         cmsdModel.setConfig({});
 
         // initialises controller
@@ -2198,6 +2211,7 @@ function MediaPlayer() {
         catchupController.initialize();
         cmcdModel.initialize();
         cmsdModel.initialize();
+        s4sModel.initialize();
         contentSteeringController.initialize();
         segmentBaseController.initialize();
     }

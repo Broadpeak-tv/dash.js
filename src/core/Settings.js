@@ -223,6 +223,9 @@ import Events from './events/Events';
  *                    etpWeightRatio: 0
  *                }
  *           }
+ *            s4s: {
+ *                enabled: false
+ *            }
  *          },
  *          errors: {
  *            recoverAttempts: {
@@ -682,6 +685,12 @@ import Events from './events/Events';
  */
 
 /**
+ * @typedef {Object} module:Settings~S4SSettings
+ * @property {boolean} [enabled=false]
+ * Enable or disable the S4S.
+ */
+
+/**
  * @typedef {Object} Metrics
  * @property {number} [metricsMaxListDepth=100]
  * Maximum number of metrics that are persisted per type.
@@ -783,6 +792,8 @@ import Events from './events/Events';
  * Settings related to Common Media Client Data reporting.
  * @property {module:Settings~CmsdSettings} cmsd
  * Settings related to Common Media Server Data parsing.
+ * @property {module:Settings~S4SSettings} s4s
+ * Settings related to S4S.
  */
 
 
@@ -1006,6 +1017,9 @@ function Settings() {
                     applyMb: false,
                     etpWeightRatio: 0
                 }
+            },
+            s4s: {
+                enabled: false
             }
         },
         errors: {

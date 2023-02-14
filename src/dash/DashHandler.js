@@ -179,6 +179,7 @@ function DashHandler(config) {
         request.mediaInfo = mediaInfo;
         request.adaptationIndex = representation.adaptation.index;
         request.representationId = representation.id;
+        request.segment = segment;
 
         if (_setRequestUrl(request, url, representation)) {
             return request;
