@@ -69,6 +69,11 @@ function CmcdModel() {
         dashMetrics,
         playbackController,
         streamProcessors,
+        _objectHeaderWhiteListKeys,
+        _requestHeaderWhiteListKeys,
+        _statusHeaderWhiteListKeys,
+        _sessionHeaderWhiteListKeys,
+        _customCmcdProviders,
         _isStartup,
         _bufferLevelStarved,
         _initialMediaRequestsDone;
@@ -107,6 +112,18 @@ function CmcdModel() {
         }
     }
 
+    function addCustomCmcdProvider(provider) {
+        try {
+            _objectHeaderWhiteListKeys = _objectHeaderWhiteListKeys.concat(provider.getCmcdObjectHeaderKeys());
+            _requestHeaderWhiteListKeys = _requestHeaderWhiteListKeys.concat(provider.getCmcdRequestHeaderKeys());
+            _statusHeaderWhiteListKeys = _statusHeaderWhiteListKeys.concat(provider.getCmcdStatusHeaderKeys());
+            _sessionHeaderWhiteListKeys = _sessionHeaderWhiteListKeys.concat(provider.getCmcdSessionHeaderKeys());
+            _customCmcdProviders.push(provider);
+        } catch (e) {
+            console.warn('Failed to to setup custom CMCD provider');
+        }
+    }
+
     function _resetInitialSettings() {
         internalData = {
             pr: 1,
@@ -120,6 +137,14 @@ function CmcdModel() {
         _isStartup = {};
         _initialMediaRequestsDone = {};
         _updateStreamProcessors();
+
+        _objectHeaderWhiteListKeys = ['br', 'd', 'ot', 'tb'];
+        _requestHeaderWhiteListKeys = ['bl', 'dl', 'mtp', 'nor', 'nrr', 'su'];
+        _statusHeaderWhiteListKeys = ['bs', 'rtp'];
+        _sessionHeaderWhiteListKeys = ['cid', 'pr', 'sf', 'sid', 'st', 'v'];
+
+        _customCmcdProviders = [];
+
     }
 
     function _onPeriodSwitchComplete() {
@@ -161,12 +186,18 @@ function CmcdModel() {
         }
     }
 
+
+    function _isCustomKey(key) {
+        // custom keys MUST carry a hyphenated prefix
+        return key.includes('-');
+    }
+
     function _applyWhitelist(cmcdData) {
         try {
             const enabledCMCDKeys = settings.get().streaming.cmcd.enabledKeys;
 
             return Object.keys(cmcdData)
-                .filter(key => enabledCMCDKeys.includes(key))
+                .filter(key => enabledCMCDKeys.includes(key) || _isCustomKey(key))
                 .reduce((obj, key) => {
                     obj[key] = cmcdData[key];
 
@@ -191,10 +222,10 @@ function CmcdModel() {
         try {
             if (settings.get().streaming.cmcd && settings.get().streaming.cmcd.enabled) {
                 const cmcdData = _getCmcdData(request);
-                const cmcdObjectHeader = _copyParameters(cmcdData, _applyWhitelistByKeys(['br', 'd', 'ot', 'tb']));
-                const cmcdRequestHeader = _copyParameters(cmcdData, _applyWhitelistByKeys(['bl', 'dl', 'mtp', 'nor', 'nrr', 'su']));
-                const cmcdStatusHeader = _copyParameters(cmcdData, _applyWhitelistByKeys(['bs', 'rtp']));
-                const cmcdSessionHeader = _copyParameters(cmcdData, _applyWhitelistByKeys(['cid', 'pr', 'sf', 'sid', 'st', 'v']));
+                const cmcdObjectHeader = _copyParameters(cmcdData, _applyWhitelistByKeys(_objectHeaderWhiteListKeys));
+                const cmcdRequestHeader = _copyParameters(cmcdData, _applyWhitelistByKeys(_requestHeaderWhiteListKeys));
+                const cmcdStatusHeader = _copyParameters(cmcdData, _applyWhitelistByKeys(_statusHeaderWhiteListKeys));
+                const cmcdSessionHeader = _copyParameters(cmcdData, _applyWhitelistByKeys(_sessionHeaderWhiteListKeys));
                 const headers = {
                     'CMCD-Object': _buildFinalString(cmcdObjectHeader),
                     'CMCD-Request': _buildFinalString(cmcdRequestHeader),
@@ -220,7 +251,7 @@ function CmcdModel() {
     function _applyWhitelistByKeys(keys) {
         const enabledCMCDKeys = settings.get().streaming.cmcd.enabledKeys;
 
-        return keys.filter(key => enabledCMCDKeys.includes(key));
+        return keys.filter(key => enabledCMCDKeys.includes(key) || _isCustomKey(key));
     }
 
     function _getCmcdData(request) {
@@ -228,17 +259,24 @@ function CmcdModel() {
             let cmcdData = null;
 
             if (request.type === HTTPRequest.MPD_TYPE) {
-                return _getCmcdDataForMpd(request);
+                cmcdData = _getCmcdDataForMpd(request);
             } else if (request.type === HTTPRequest.MEDIA_SEGMENT_TYPE) {
                 _initForMediaType(request.mediaType);
-                return _getCmcdDataForMediaSegment(request);
+                cmcdData = _getCmcdDataForMediaSegment(request);
             } else if (request.type === HTTPRequest.INIT_SEGMENT_TYPE) {
-                return _getCmcdDataForInitSegment(request);
+                cmcdData = _getCmcdDataForInitSegment(request);
             } else if (request.type === HTTPRequest.OTHER_TYPE || request.type === HTTPRequest.XLINK_EXPANSION_TYPE) {
-                return _getCmcdDataForOther(request);
+                cmcdData = _getCmcdDataForOther(request);
             } else if (request.type === HTTPRequest.LICENSE) {
-                return _getCmcdDataForLicense(request);
+                cmcdData = _getCmcdDataForLicense(request);
             }
+
+            _customCmcdProviders.forEach(p => {
+                cmcdData = {
+                    ...cmcdData,
+                    ...p.getCmcdDdata(request)
+                };
+            })
 
             return cmcdData;
         } catch (e) {
@@ -597,6 +635,7 @@ function CmcdModel() {
     }
 
     instance = {
+        addCustomCmcdProvider,
         getQueryParameter,
         getHeaderParameters,
         setConfig,
