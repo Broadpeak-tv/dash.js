@@ -152,7 +152,6 @@ function S4SModel() {
             obj[fqdn] = context;
             localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(obj));
         } catch (e) {
-            return null;
         }
     }
 
@@ -278,7 +277,8 @@ function S4SModel() {
 
     function getCmcdRequestHeaderKeys() {
         return [
-            KEY_MEDIA
+            KEY_MEDIA,
+            KEY_CONTEXT
         ];
     }
 
@@ -296,11 +296,13 @@ function S4SModel() {
         // Add S4S version
         cmcdData[KEY_VERSION] = VERSION;
 
+        // Add context
+        const context = _getContext(request);
+        if (context) {
+            cmcdData[KEY_CONTEXT] = context;
+        }
+
         if (request.type === HTTPRequest.MEDIA_SEGMENT_TYPE) {
-            const context = _getContext(request);
-            if (context) {
-                cmcdData[KEY_CONTEXT] = context;
-            }
             if (_mode !== S4S_MODES.TRANSPARENT) {
                 cmcdData[KEY_MEDIA] = _getMediaRepresentations(request);
             }
