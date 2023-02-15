@@ -1,4 +1,4 @@
-.videoContainer{
+.videoContainer {
     position: relative;
 }
 
@@ -32,7 +32,7 @@ video {
     font-weight: 500;
 }
 
-#metric-chart {
+.metric-chart {
     max-height: 400px;
     min-height: 400px;
 }
