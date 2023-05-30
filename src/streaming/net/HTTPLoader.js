@@ -126,6 +126,11 @@ function HTTPLoader(cfg) {
     
             const cmsd = responseHeaders && settings.get().streaming.cmsd && settings.get().streaming.cmsd.enabled ? cmsdModel.parseResponseHeaders(responseHeaders, request.mediaType) : null;
     
+            // [BPK] Update initial request info in case returned segment bitrate differs from the requested one
+            if (cmsd && cmsd.dynamic && cmsd.dynamic['tv.broadpeak.s4s-bitrate']) {
+                updateRequestInfo(request, cmsd.dynamic['tv.broadpeak.s4s-bitrate']);
+            }
+
             dashMetrics.addHttpRequest(request, responseUrl, responseStatus, responseHeaders, success ? traces : null, cmsd);
         }
     
@@ -442,6 +447,20 @@ function HTTPLoader(cfg) {
             x.loader.abort(x);
         });
         requests = [];
+    }
+
+    function updateRequestInfo(request, bitrate) {
+        if (!request.mediaInfo || isNaN(bitrate)) {
+            return;
+        }
+        const index = request.mediaInfo.bitrateList.findIndex(item => {
+            return item.bandwidth === bitrate;
+        })
+        if (index === -1) {
+            return;
+        }
+        request.quality = request.index = index;
+        request.representationId = request.mediaInfo.bitrateList[index].id;
     }
 
     instance = {
