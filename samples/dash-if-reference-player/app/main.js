@@ -333,6 +333,11 @@ app.controller('DashController', ['$scope', '$window', 'sources', 'contributors'
     $scope.isCasting = false;
     $scope.castPlayerState = 'IDLE';
 
+    // Manifest Proxy
+    $scope.manifestProxyEnabled = true;
+    $scope.manifestProxyUrl = 'http://localhost:8080/manifest.mpd/proto';
+    // $scope.manifestProxyUrl = 'https://explo.broadpeak.tv:8343/manifest.mpd/proto';
+
     ////////////////////////////////////////
     //
     // Player Setup
@@ -1019,7 +1024,8 @@ app.controller('DashController', ['$scope', '$window', 'sources', 'contributors'
             loadCastMedia($scope.selectedItem.url, $scope.protData);
         } else {
             $scope.player.setProtectionData($scope.protData);
-            $scope.player.attachSource($scope.selectedItem.url);
+            const url = $scope.manifestProxyEnabled ? $scope.manifestProxyUrl + '?url=' + $scope.selectedItem.url : $scope.selectedItem.url;
+            $scope.player.attachSource(url);
         }
         if ($scope.initialSettings.audio) {
             $scope.player.setInitialMediaSettingsFor('audio', {
