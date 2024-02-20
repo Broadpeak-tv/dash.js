@@ -22512,12 +22512,7 @@ function DashParser(config) {
     try {
       var buffer = new Uint8Array(data);
       var message = MpdMessage.decode(buffer);
-      var options = {
-        // longs: String,
-        // enums: String,
-        // bytes: String,
-      };
-      var MPD = MpdMessage.toObject(message, options);
+      var MPD = MpdMessage.toObject(message);
       return {
         MPD: MPD
       };
@@ -22542,7 +22537,7 @@ function DashParser(config) {
   return instance;
 }
 DashParser.__dashjs_factory_name = 'DashParser';
-/* harmony default export */ __webpack_exports__["default"] = (_core_FactoryMaker_js__WEBPACK_IMPORTED_MODULE_0__["default"].getClassFactory(DashParser));
+/* harmony default export */ __webpack_exports__["default"] = (_core_FactoryMaker_js__WEBPACK_IMPORTED_MODULE_0__["default"].getSingletonFactory(DashParser));
 
 /***/ }),
 
