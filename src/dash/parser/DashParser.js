@@ -38,6 +38,8 @@ import LangMatcher from './matchers/LangMatcher.js';
 import RepresentationBaseValuesMap from './maps/RepresentationBaseValuesMap.js';
 import SegmentValuesMap from './maps/SegmentValuesMap.js';
 import * as tXml from '../../../externals/tXml.js';
+import * as protobufjs from 'protobufjs/light.js'
+import dashproto from './dash-mpd.json'
 
 // List of node that shall be represented as arrays
 const arrayNodes = [
@@ -80,7 +82,8 @@ function DashParser(config) {
     let instance,
         logger,
         matchers,
-        objectIron;
+        objectIron,
+        MpdMessage;
 
     function setup() {
         logger = debug.getLogger(instance);
@@ -95,17 +98,33 @@ function DashParser(config) {
             adaptationset: new RepresentationBaseValuesMap(),
             period: new SegmentValuesMap()
         });
+
+        const root = protobufjs.Root.fromJSON(dashproto);
+        MpdMessage = root.lookupType('dash.MPD');
     }
 
     function getIron() {
         return objectIron;
     }
 
-    function parse(data) {
+    function parse(data, contentType) {
         let manifest;
         const startTime = window.performance.now();
 
-        manifest = parseXml(data);
+        switch (contentType) {
+            case 'application/json':
+                data = String.fromCharCode.apply(null, new Uint8Array(data));
+                manifest = parseJson(data);
+                break;
+            case 'application/octet-stream':
+                manifest = parseProto(data);
+                break;
+            case 'application/dash+xml':
+            default:
+                data = String.fromCharCode.apply(null, new Uint8Array(data));
+                manifest = parseXml(data);
+                break;
+        }
 
         if (!manifest) {
             throw new Error('failed to parse the manifest');
@@ -162,6 +181,31 @@ function DashParser(config) {
             return ret;
         } catch (e) {
             return null;
+        }
+    }
+
+    function parseProto(data) {
+        try {
+            const buffer = new Uint8Array(data);
+            const message = MpdMessage.decode(buffer);                        
+            const options = {
+                // longs: String,
+                // enums: String,
+                // bytes: String,
+            }
+            const MPD = MpdMessage.toObject(message, options);
+            return { MPD }
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function parseJson(data) {
+        try {
+            const mpd = JSON.parse(data)
+            return mpd;
+        } catch (e) {
+            return null
         }
     }
 

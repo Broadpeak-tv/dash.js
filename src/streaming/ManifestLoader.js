@@ -82,7 +82,7 @@ function ManifestLoader(config) {
             settings: config.settings
         });
 
-        parser = null;
+        parser = DashParser(context).create({ debug: debug });
     }
 
     function onXlinkReady(event) {
@@ -132,7 +132,7 @@ function ManifestLoader(config) {
 
         urlLoader.load({
             request: request,
-            success: function (data, textStatus, responseURL) {
+            success: function (data, textStatus, responseURL, contentType) {
                 // Manage situations in which success is called after calling reset
                 if (!xlinkController) return;
 
@@ -186,7 +186,7 @@ function ManifestLoader(config) {
                 xlinkController.setParser(parser);
 
                 try {
-                    manifest = parser.parse(data);
+                    manifest = parser.parse(data, contentType);
                 } catch (e) {
                     eventBus.trigger(Events.INTERNAL_MANIFEST_LOADED, {
                         manifest: null,

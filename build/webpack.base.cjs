@@ -32,6 +32,11 @@ const config = {
                         options: {presets: ['@babel/env']}
                     }
                 ]
+            },
+            {
+                test: /\.json$/i,
+                type: 'json'
+                // loader: 'json-loader'
             }
         ]
     },

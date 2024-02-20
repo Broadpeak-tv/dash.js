@@ -205,6 +205,10 @@ function FetchLoader() {
                                 bytes: value.length
                             });
 
+                            if (httpRequest.customData.request.type === 'MPD') {
+                                return;
+                            }
+
                             if (calculationMode === Constants.LOW_LATENCY_DOWNLOAD_TIME_CALCULATION_MODE.MOOF_PARSING && lastChunkWasFinished) {
                                 // Parse the payload and capture  the 'moof' box
                                 const boxesInfo = boxParser.findLastTopIsoBoxCompleted(['moof'], receivedData, offset);

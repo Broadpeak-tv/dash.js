@@ -1,0 +1,3281 @@
+{
+	"nested": {
+		"dash": {
+			"options": {
+				"optimize_for": "SPEED"
+			},
+			"nested": {
+				"MPD": {
+					"oneofs": {
+						"_id": {
+							"oneof": [
+								"id"
+							]
+						},
+						"_type": {
+							"oneof": [
+								"type"
+							]
+						},
+						"_availabilityStartTime": {
+							"oneof": [
+								"availabilityStartTime"
+							]
+						},
+						"_publishTime": {
+							"oneof": [
+								"publishTime"
+							]
+						},
+						"_availabilityEndTime": {
+							"oneof": [
+								"availabilityEndTime"
+							]
+						},
+						"_mediaPresentationDuration": {
+							"oneof": [
+								"mediaPresentationDuration"
+							]
+						},
+						"_minimumUpdatePeriod": {
+							"oneof": [
+								"minimumUpdatePeriod"
+							]
+						},
+						"_timeShiftBufferDepth": {
+							"oneof": [
+								"timeShiftBufferDepth"
+							]
+						},
+						"_suggestedPresentationDelay": {
+							"oneof": [
+								"suggestedPresentationDelay"
+							]
+						},
+						"_maxSegmentDuration": {
+							"oneof": [
+								"maxSegmentDuration"
+							]
+						},
+						"_maxSubsegmentDuration": {
+							"oneof": [
+								"maxSubsegmentDuration"
+							]
+						}
+					},
+					"fields": {
+						"id": {
+							"type": "string",
+							"id": 1,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"profiles": {
+							"rule": "required",
+							"type": "string",
+							"id": 2
+						},
+						"type": {
+							"type": "string",
+							"id": 3,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"availabilityStartTime": {
+							"type": "uint64",
+							"id": 4,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"publishTime": {
+							"type": "uint64",
+							"id": 5,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"availabilityEndTime": {
+							"type": "uint64",
+							"id": 6,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"mediaPresentationDuration": {
+							"type": "float",
+							"id": 7,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"minimumUpdatePeriod": {
+							"type": "float",
+							"id": 8,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"minBufferTime": {
+							"rule": "required",
+							"type": "float",
+							"id": 9
+						},
+						"timeShiftBufferDepth": {
+							"type": "float",
+							"id": 10,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"suggestedPresentationDelay": {
+							"type": "float",
+							"id": 11,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"maxSegmentDuration": {
+							"type": "float",
+							"id": 12,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"maxSubsegmentDuration": {
+							"type": "float",
+							"id": 13,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"ProgramInformation": {
+							"rule": "repeated",
+							"type": "ProgramInformationType",
+							"id": 101
+						},
+						"BaseURL": {
+							"rule": "repeated",
+							"type": "BaseURLType",
+							"id": 102
+						},
+						"Location": {
+							"rule": "repeated",
+							"type": "string",
+							"id": 103
+						},
+						"PatchLocation": {
+							"rule": "repeated",
+							"type": "string",
+							"id": 104
+						},
+						"ServiceDescription": {
+							"rule": "repeated",
+							"type": "ServiceDescriptionType",
+							"id": 105
+						},
+						"ContentProtection": {
+							"rule": "repeated",
+							"type": "ContentProtectionType",
+							"id": 106
+						},
+						"Period": {
+							"rule": "repeated",
+							"type": "PeriodType",
+							"id": 107
+						},
+						"Metrics": {
+							"rule": "repeated",
+							"type": "MetricsType",
+							"id": 108
+						},
+						"EssentialProperty": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 109
+						},
+						"SupplementalProperty": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 110
+						},
+						"UTCTiming": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 111
+						}
+					}
+				},
+				"BaseURLType": {
+					"oneofs": {
+						"___text": {
+							"oneof": [
+								"__text"
+							]
+						}
+					},
+					"fields": {
+						"__text": {
+							"type": "string",
+							"id": 1,
+							"options": {
+								"proto3_optional": true
+							}
+						}
+					}
+				},
+				"PeriodType": {
+					"oneofs": {
+						"_href": {
+							"oneof": [
+								"href"
+							]
+						},
+						"_actuate": {
+							"oneof": [
+								"actuate"
+							]
+						},
+						"_id": {
+							"oneof": [
+								"id"
+							]
+						},
+						"_start": {
+							"oneof": [
+								"start"
+							]
+						},
+						"_duration": {
+							"oneof": [
+								"duration"
+							]
+						},
+						"_bitstreamSwitching": {
+							"oneof": [
+								"bitstreamSwitching"
+							]
+						},
+						"_SegmentBase": {
+							"oneof": [
+								"SegmentBase"
+							]
+						},
+						"_SegmentList": {
+							"oneof": [
+								"SegmentList"
+							]
+						},
+						"_SegmentTemplate": {
+							"oneof": [
+								"SegmentTemplate"
+							]
+						},
+						"_AssetIdentifier": {
+							"oneof": [
+								"AssetIdentifier"
+							]
+						}
+					},
+					"fields": {
+						"href": {
+							"type": "string",
+							"id": 1,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"actuate": {
+							"type": "string",
+							"id": 2,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"id": {
+							"type": "string",
+							"id": 3,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"start": {
+							"type": "float",
+							"id": 4,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"duration": {
+							"type": "float",
+							"id": 5,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"bitstreamSwitching": {
+							"type": "bool",
+							"id": 6,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"BaseURL": {
+							"rule": "repeated",
+							"type": "BaseURLType",
+							"id": 101
+						},
+						"SegmentBase": {
+							"type": "SegmentBaseType",
+							"id": 102,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"SegmentList": {
+							"type": "SegmentListType",
+							"id": 103,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"SegmentTemplate": {
+							"type": "SegmentTemplateType",
+							"id": 104,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"AssetIdentifier": {
+							"type": "DescriptorType",
+							"id": 105,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"EventStream": {
+							"rule": "repeated",
+							"type": "EventStreamType",
+							"id": 106
+						},
+						"ServiceDescription": {
+							"rule": "repeated",
+							"type": "ServiceDescriptionType",
+							"id": 107
+						},
+						"ContentProtection": {
+							"rule": "repeated",
+							"type": "ContentProtectionType",
+							"id": 108
+						},
+						"AdaptationSet": {
+							"rule": "repeated",
+							"type": "AdaptationSetType",
+							"id": 109
+						},
+						"Subset": {
+							"rule": "repeated",
+							"type": "SubsetType",
+							"id": 110
+						},
+						"SupplementalProperty": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 111
+						}
+					}
+				},
+				"ContentProtectionType": {
+					"oneofs": {
+						"_value": {
+							"oneof": [
+								"value"
+							]
+						},
+						"_ref": {
+							"oneof": [
+								"ref"
+							]
+						},
+						"_refId": {
+							"oneof": [
+								"refId"
+							]
+						},
+						"_reobustness": {
+							"oneof": [
+								"reobustness"
+							]
+						}
+					},
+					"fields": {
+						"schemeIdUri": {
+							"rule": "required",
+							"type": "string",
+							"id": 1
+						},
+						"value": {
+							"type": "string",
+							"id": 2,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"ref": {
+							"type": "string",
+							"id": 3,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"refId": {
+							"type": "string",
+							"id": 4,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"reobustness": {
+							"type": "string",
+							"id": 5,
+							"options": {
+								"proto3_optional": true
+							}
+						}
+					}
+				},
+				"CommonAttributesAndElements": {
+					"oneofs": {
+						"_profiles": {
+							"oneof": [
+								"profiles"
+							]
+						},
+						"_height": {
+							"oneof": [
+								"height"
+							]
+						},
+						"_width": {
+							"oneof": [
+								"width"
+							]
+						},
+						"_sar": {
+							"oneof": [
+								"sar"
+							]
+						},
+						"_frameRate": {
+							"oneof": [
+								"frameRate"
+							]
+						},
+						"_audioSamplingRate": {
+							"oneof": [
+								"audioSamplingRate"
+							]
+						},
+						"_segmentProfiles": {
+							"oneof": [
+								"segmentProfiles"
+							]
+						},
+						"_codecs": {
+							"oneof": [
+								"codecs"
+							]
+						},
+						"_containerProfiles": {
+							"oneof": [
+								"containerProfiles"
+							]
+						},
+						"_maximumSAPPeriod": {
+							"oneof": [
+								"maximumSAPPeriod"
+							]
+						},
+						"_startWithSAP": {
+							"oneof": [
+								"startWithSAP"
+							]
+						},
+						"_maxPlayoutRate": {
+							"oneof": [
+								"maxPlayoutRate"
+							]
+						},
+						"_codingDependency": {
+							"oneof": [
+								"codingDependency"
+							]
+						},
+						"_scanType": {
+							"oneof": [
+								"scanType"
+							]
+						},
+						"_selectionPriority": {
+							"oneof": [
+								"selectionPriority"
+							]
+						},
+						"_tag": {
+							"oneof": [
+								"tag"
+							]
+						}
+					},
+					"fields": {
+						"profiles": {
+							"type": "string",
+							"id": 1001,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"height": {
+							"type": "uint32",
+							"id": 1002,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"width": {
+							"type": "uint32",
+							"id": 1003,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"sar": {
+							"type": "string",
+							"id": 1004,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"frameRate": {
+							"type": "string",
+							"id": 1005,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"audioSamplingRate": {
+							"type": "uint32",
+							"id": 1006,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"mimeType": {
+							"rule": "required",
+							"type": "string",
+							"id": 1007
+						},
+						"segmentProfiles": {
+							"type": "string",
+							"id": 1008,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"codecs": {
+							"type": "string",
+							"id": 1009,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"containerProfiles": {
+							"type": "string",
+							"id": 1010,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"maximumSAPPeriod": {
+							"type": "double",
+							"id": 1011,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"startWithSAP": {
+							"type": "uint32",
+							"id": 1012,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"maxPlayoutRate": {
+							"type": "double",
+							"id": 1013,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"codingDependency": {
+							"type": "bool",
+							"id": 1014,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"scanType": {
+							"type": "string",
+							"id": 1015,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"selectionPriority": {
+							"type": "string",
+							"id": 1016,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"tag": {
+							"type": "string",
+							"id": 1017,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"FramePacking": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 1101
+						},
+						"AudioChannelConfiguration": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 1102
+						},
+						"ContentProtection": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 1103
+						},
+						"OutputProtection": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 1104
+						},
+						"EssentialProperty": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 1105
+						},
+						"SupplementalProperty": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 1107
+						},
+						"InbandEventStream": {
+							"rule": "repeated",
+							"type": "EventStreamType",
+							"id": 1108
+						},
+						"Switching": {
+							"rule": "repeated",
+							"type": "SwitchingType",
+							"id": 1109
+						},
+						"RandomAccess": {
+							"rule": "repeated",
+							"type": "RandomAccessType",
+							"id": 1110
+						},
+						"GroupLabel": {
+							"rule": "repeated",
+							"type": "LabelType",
+							"id": 1111
+						},
+						"Label": {
+							"rule": "repeated",
+							"type": "LabelType",
+							"id": 1112
+						},
+						"ProducerReferenceTime": {
+							"rule": "repeated",
+							"type": "ProducerReferenceTimeType",
+							"id": 1113
+						},
+						"ContentPopularityRate": {
+							"rule": "repeated",
+							"type": "ContentPopularityRateType",
+							"id": 1114
+						},
+						"Resync": {
+							"rule": "repeated",
+							"type": "ResyncType",
+							"id": 1115
+						}
+					}
+				},
+				"AdaptationSetType": {
+					"oneofs": {
+						"_profiles": {
+							"oneof": [
+								"profiles"
+							]
+						},
+						"_height": {
+							"oneof": [
+								"height"
+							]
+						},
+						"_width": {
+							"oneof": [
+								"width"
+							]
+						},
+						"_sar": {
+							"oneof": [
+								"sar"
+							]
+						},
+						"_frameRate": {
+							"oneof": [
+								"frameRate"
+							]
+						},
+						"_audioSamplingRate": {
+							"oneof": [
+								"audioSamplingRate"
+							]
+						},
+						"_mimeType": {
+							"oneof": [
+								"mimeType"
+							]
+						},
+						"_segmentProfiles": {
+							"oneof": [
+								"segmentProfiles"
+							]
+						},
+						"_codecs": {
+							"oneof": [
+								"codecs"
+							]
+						},
+						"_containerProfiles": {
+							"oneof": [
+								"containerProfiles"
+							]
+						},
+						"_maximumSAPPeriod": {
+							"oneof": [
+								"maximumSAPPeriod"
+							]
+						},
+						"_startWithSAP": {
+							"oneof": [
+								"startWithSAP"
+							]
+						},
+						"_maxPlayoutRate": {
+							"oneof": [
+								"maxPlayoutRate"
+							]
+						},
+						"_codingDependency": {
+							"oneof": [
+								"codingDependency"
+							]
+						},
+						"_scanType": {
+							"oneof": [
+								"scanType"
+							]
+						},
+						"_selectionPriority": {
+							"oneof": [
+								"selectionPriority"
+							]
+						},
+						"_tag": {
+							"oneof": [
+								"tag"
+							]
+						},
+						"_href": {
+							"oneof": [
+								"href"
+							]
+						},
+						"_actuate": {
+							"oneof": [
+								"actuate"
+							]
+						},
+						"_id": {
+							"oneof": [
+								"id"
+							]
+						},
+						"_group": {
+							"oneof": [
+								"group"
+							]
+						},
+						"_lang": {
+							"oneof": [
+								"lang"
+							]
+						},
+						"_contentType": {
+							"oneof": [
+								"contentType"
+							]
+						},
+						"_par": {
+							"oneof": [
+								"par"
+							]
+						},
+						"_minBandwidth": {
+							"oneof": [
+								"minBandwidth"
+							]
+						},
+						"_maxBandwidth": {
+							"oneof": [
+								"maxBandwidth"
+							]
+						},
+						"_minWidth": {
+							"oneof": [
+								"minWidth"
+							]
+						},
+						"_maxWidth": {
+							"oneof": [
+								"maxWidth"
+							]
+						},
+						"_minHeight": {
+							"oneof": [
+								"minHeight"
+							]
+						},
+						"_maxHeight": {
+							"oneof": [
+								"maxHeight"
+							]
+						},
+						"_minFrameRate": {
+							"oneof": [
+								"minFrameRate"
+							]
+						},
+						"_maxFrameRate": {
+							"oneof": [
+								"maxFrameRate"
+							]
+						},
+						"_segmentAlignment": {
+							"oneof": [
+								"segmentAlignment"
+							]
+						},
+						"_bitstreamSwitching": {
+							"oneof": [
+								"bitstreamSwitching"
+							]
+						},
+						"_subsegmentAlignment": {
+							"oneof": [
+								"subsegmentAlignment"
+							]
+						},
+						"_subsegmentStartsWithSAP": {
+							"oneof": [
+								"subsegmentStartsWithSAP"
+							]
+						},
+						"_initializationSetRef": {
+							"oneof": [
+								"initializationSetRef"
+							]
+						},
+						"_initializationPrincipal": {
+							"oneof": [
+								"initializationPrincipal"
+							]
+						},
+						"_SegmentBase": {
+							"oneof": [
+								"SegmentBase"
+							]
+						},
+						"_SegmentList": {
+							"oneof": [
+								"SegmentList"
+							]
+						},
+						"_SegmentTemplate": {
+							"oneof": [
+								"SegmentTemplate"
+							]
+						}
+					},
+					"fields": {
+						"profiles": {
+							"type": "string",
+							"id": 1001,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"height": {
+							"type": "uint32",
+							"id": 1002,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"width": {
+							"type": "uint32",
+							"id": 1003,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"sar": {
+							"type": "string",
+							"id": 1004,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"frameRate": {
+							"type": "string",
+							"id": 1005,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"audioSamplingRate": {
+							"type": "uint32",
+							"id": 1006,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"mimeType": {
+							"type": "string",
+							"id": 1007,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"segmentProfiles": {
+							"type": "string",
+							"id": 1008,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"codecs": {
+							"type": "string",
+							"id": 1009,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"containerProfiles": {
+							"type": "string",
+							"id": 1010,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"maximumSAPPeriod": {
+							"type": "double",
+							"id": 1011,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"startWithSAP": {
+							"type": "uint32",
+							"id": 1012,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"maxPlayoutRate": {
+							"type": "double",
+							"id": 1013,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"codingDependency": {
+							"type": "bool",
+							"id": 1014,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"scanType": {
+							"type": "string",
+							"id": 1015,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"selectionPriority": {
+							"type": "string",
+							"id": 1016,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"tag": {
+							"type": "string",
+							"id": 1017,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"href": {
+							"type": "string",
+							"id": 1,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"actuate": {
+							"type": "string",
+							"id": 2,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"id": {
+							"type": "string",
+							"id": 3,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"group": {
+							"type": "uint32",
+							"id": 4,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"lang": {
+							"type": "string",
+							"id": 5,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"contentType": {
+							"type": "string",
+							"id": 6,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"par": {
+							"type": "string",
+							"id": 7,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"minBandwidth": {
+							"type": "uint32",
+							"id": 8,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"maxBandwidth": {
+							"type": "uint32",
+							"id": 9,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"minWidth": {
+							"type": "uint32",
+							"id": 10,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"maxWidth": {
+							"type": "uint32",
+							"id": 11,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"minHeight": {
+							"type": "uint32",
+							"id": 12,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"maxHeight": {
+							"type": "uint32",
+							"id": 13,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"minFrameRate": {
+							"type": "string",
+							"id": 14,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"maxFrameRate": {
+							"type": "string",
+							"id": 15,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"segmentAlignment": {
+							"type": "bool",
+							"id": 16,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"bitstreamSwitching": {
+							"type": "bool",
+							"id": 17,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"subsegmentAlignment": {
+							"type": "bool",
+							"id": 18,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"subsegmentStartsWithSAP": {
+							"type": "uint32",
+							"id": 19,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"initializationSetRef": {
+							"type": "string",
+							"id": 20,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"initializationPrincipal": {
+							"type": "string",
+							"id": 21,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"FramePacking": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 1101
+						},
+						"AudioChannelConfiguration": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 1102
+						},
+						"ContentProtection": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 1103
+						},
+						"OutputProtection": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 1104
+						},
+						"EssentialProperty": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 1105
+						},
+						"SupplementalProperty": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 1107
+						},
+						"InbandEventStream": {
+							"rule": "repeated",
+							"type": "EventStreamType",
+							"id": 1108
+						},
+						"Switching": {
+							"rule": "repeated",
+							"type": "SwitchingType",
+							"id": 1109
+						},
+						"RandomAccess": {
+							"rule": "repeated",
+							"type": "RandomAccessType",
+							"id": 1110
+						},
+						"GroupLabel": {
+							"rule": "repeated",
+							"type": "LabelType",
+							"id": 1111
+						},
+						"Label": {
+							"rule": "repeated",
+							"type": "LabelType",
+							"id": 1112
+						},
+						"ProducerReferenceTime": {
+							"rule": "repeated",
+							"type": "ProducerReferenceTimeType",
+							"id": 1113
+						},
+						"ContentPopularityRate": {
+							"rule": "repeated",
+							"type": "ContentPopularityRateType",
+							"id": 1114
+						},
+						"Resync": {
+							"rule": "repeated",
+							"type": "ResyncType",
+							"id": 1115
+						},
+						"Role": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 102
+						},
+						"Rating": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 103
+						},
+						"Viewpoint": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 104
+						},
+						"ContentComponent": {
+							"rule": "repeated",
+							"type": "ContentComponentType",
+							"id": 105
+						},
+						"BaseURL": {
+							"rule": "repeated",
+							"type": "BaseURLType",
+							"id": 106
+						},
+						"SegmentBase": {
+							"type": "SegmentBaseType",
+							"id": 107,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"SegmentList": {
+							"type": "SegmentListType",
+							"id": 108,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"SegmentTemplate": {
+							"type": "SegmentTemplateType",
+							"id": 109,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"Representation": {
+							"rule": "repeated",
+							"type": "RepresentationType",
+							"id": 110
+						}
+					}
+				},
+				"RepresentationType": {
+					"oneofs": {
+						"_profiles": {
+							"oneof": [
+								"profiles"
+							]
+						},
+						"_height": {
+							"oneof": [
+								"height"
+							]
+						},
+						"_width": {
+							"oneof": [
+								"width"
+							]
+						},
+						"_sar": {
+							"oneof": [
+								"sar"
+							]
+						},
+						"_frameRate": {
+							"oneof": [
+								"frameRate"
+							]
+						},
+						"_audioSamplingRate": {
+							"oneof": [
+								"audioSamplingRate"
+							]
+						},
+						"_mimeType": {
+							"oneof": [
+								"mimeType"
+							]
+						},
+						"_segmentProfiles": {
+							"oneof": [
+								"segmentProfiles"
+							]
+						},
+						"_codecs": {
+							"oneof": [
+								"codecs"
+							]
+						},
+						"_containerProfiles": {
+							"oneof": [
+								"containerProfiles"
+							]
+						},
+						"_maximumSAPPeriod": {
+							"oneof": [
+								"maximumSAPPeriod"
+							]
+						},
+						"_startWithSAP": {
+							"oneof": [
+								"startWithSAP"
+							]
+						},
+						"_maxPlayoutRate": {
+							"oneof": [
+								"maxPlayoutRate"
+							]
+						},
+						"_codingDependency": {
+							"oneof": [
+								"codingDependency"
+							]
+						},
+						"_scanType": {
+							"oneof": [
+								"scanType"
+							]
+						},
+						"_selectionPriority": {
+							"oneof": [
+								"selectionPriority"
+							]
+						},
+						"_tag": {
+							"oneof": [
+								"tag"
+							]
+						},
+						"_qualityRanking": {
+							"oneof": [
+								"qualityRanking"
+							]
+						},
+						"_dependencyId": {
+							"oneof": [
+								"dependencyId"
+							]
+						},
+						"_associationId": {
+							"oneof": [
+								"associationId"
+							]
+						},
+						"_associationType": {
+							"oneof": [
+								"associationType"
+							]
+						},
+						"_mediaStreamStructureId": {
+							"oneof": [
+								"mediaStreamStructureId"
+							]
+						},
+						"_ExtendedBandwidth": {
+							"oneof": [
+								"ExtendedBandwidth"
+							]
+						},
+						"_SubRepresentation": {
+							"oneof": [
+								"SubRepresentation"
+							]
+						},
+						"_SegmentBase": {
+							"oneof": [
+								"SegmentBase"
+							]
+						},
+						"_SegmentList": {
+							"oneof": [
+								"SegmentList"
+							]
+						},
+						"_SegmentTemplate": {
+							"oneof": [
+								"SegmentTemplate"
+							]
+						}
+					},
+					"fields": {
+						"profiles": {
+							"type": "string",
+							"id": 1001,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"height": {
+							"type": "uint32",
+							"id": 1002,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"width": {
+							"type": "uint32",
+							"id": 1003,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"sar": {
+							"type": "string",
+							"id": 1004,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"frameRate": {
+							"type": "string",
+							"id": 1005,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"audioSamplingRate": {
+							"type": "uint32",
+							"id": 1006,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"mimeType": {
+							"type": "string",
+							"id": 1007,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"segmentProfiles": {
+							"type": "string",
+							"id": 1008,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"codecs": {
+							"type": "string",
+							"id": 1009,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"containerProfiles": {
+							"type": "string",
+							"id": 1010,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"maximumSAPPeriod": {
+							"type": "double",
+							"id": 1011,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"startWithSAP": {
+							"type": "uint32",
+							"id": 1012,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"maxPlayoutRate": {
+							"type": "double",
+							"id": 1013,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"codingDependency": {
+							"type": "bool",
+							"id": 1014,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"scanType": {
+							"type": "string",
+							"id": 1015,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"selectionPriority": {
+							"type": "string",
+							"id": 1016,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"tag": {
+							"type": "string",
+							"id": 1017,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"id": {
+							"rule": "required",
+							"type": "string",
+							"id": 1
+						},
+						"bandwidth": {
+							"rule": "required",
+							"type": "uint32",
+							"id": 2
+						},
+						"qualityRanking": {
+							"type": "uint32",
+							"id": 3,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"dependencyId": {
+							"type": "string",
+							"id": 4,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"associationId": {
+							"type": "string",
+							"id": 5,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"associationType": {
+							"type": "string",
+							"id": 6,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"mediaStreamStructureId": {
+							"type": "string",
+							"id": 7,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"FramePacking": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 1101
+						},
+						"AudioChannelConfiguration": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 1102
+						},
+						"ContentProtection": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 1103
+						},
+						"OutputProtection": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 1104
+						},
+						"EssentialProperty": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 1105
+						},
+						"SupplementalProperty": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 1107
+						},
+						"InbandEventStream": {
+							"rule": "repeated",
+							"type": "EventStreamType",
+							"id": 1108
+						},
+						"Switching": {
+							"rule": "repeated",
+							"type": "SwitchingType",
+							"id": 1109
+						},
+						"RandomAccess": {
+							"rule": "repeated",
+							"type": "RandomAccessType",
+							"id": 1110
+						},
+						"GroupLabel": {
+							"rule": "repeated",
+							"type": "LabelType",
+							"id": 1111
+						},
+						"Label": {
+							"rule": "repeated",
+							"type": "LabelType",
+							"id": 1112
+						},
+						"ProducerReferenceTime": {
+							"rule": "repeated",
+							"type": "ProducerReferenceTimeType",
+							"id": 1113
+						},
+						"ContentPopularityRate": {
+							"rule": "repeated",
+							"type": "ContentPopularityRateType",
+							"id": 1114
+						},
+						"Resync": {
+							"rule": "repeated",
+							"type": "ResyncType",
+							"id": 1115
+						},
+						"BaseURL": {
+							"rule": "repeated",
+							"type": "BaseURLType",
+							"id": 101
+						},
+						"ExtendedBandwidth": {
+							"type": "ExtendedBandwidthType",
+							"id": 102,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"SubRepresentation": {
+							"type": "SubRepresentationType",
+							"id": 103,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"SegmentBase": {
+							"type": "SegmentBaseType",
+							"id": 104,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"SegmentList": {
+							"type": "SegmentListType",
+							"id": 105,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"SegmentTemplate": {
+							"type": "SegmentTemplateType",
+							"id": 106,
+							"options": {
+								"proto3_optional": true
+							}
+						}
+					}
+				},
+				"ServiceDescriptionType": {
+					"fields": {
+						"id": {
+							"rule": "required",
+							"type": "string",
+							"id": 1
+						},
+						"Scope": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 2
+						},
+						"Latency": {
+							"rule": "repeated",
+							"type": "LatencyType",
+							"id": 3
+						}
+					},
+					"nested": {
+						"LatencyType": {
+							"oneofs": {
+								"_target": {
+									"oneof": [
+										"target"
+									]
+								},
+								"_max": {
+									"oneof": [
+										"max"
+									]
+								},
+								"_min": {
+									"oneof": [
+										"min"
+									]
+								}
+							},
+							"fields": {
+								"referenceId": {
+									"rule": "required",
+									"type": "string",
+									"id": 1
+								},
+								"target": {
+									"type": "uint32",
+									"id": 2,
+									"options": {
+										"proto3_optional": true
+									}
+								},
+								"max": {
+									"type": "uint32",
+									"id": 3,
+									"options": {
+										"proto3_optional": true
+									}
+								},
+								"min": {
+									"type": "uint32",
+									"id": 45,
+									"options": {
+										"proto3_optional": true
+									}
+								}
+							}
+						}
+					}
+				},
+				"DescriptorType": {
+					"oneofs": {
+						"_id": {
+							"oneof": [
+								"id"
+							]
+						},
+						"_value": {
+							"oneof": [
+								"value"
+							]
+						}
+					},
+					"fields": {
+						"id": {
+							"type": "string",
+							"id": 1,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"schemeIdUri": {
+							"rule": "required",
+							"type": "string",
+							"id": 2
+						},
+						"value": {
+							"type": "string",
+							"id": 3,
+							"options": {
+								"proto3_optional": true
+							}
+						}
+					}
+				},
+				"SegmentBaseType": {
+					"oneofs": {
+						"_timescale": {
+							"oneof": [
+								"timescale"
+							]
+						},
+						"_presentationTimeOffset": {
+							"oneof": [
+								"presentationTimeOffset"
+							]
+						},
+						"_eptDelta": {
+							"oneof": [
+								"eptDelta"
+							]
+						},
+						"_pdDelta": {
+							"oneof": [
+								"pdDelta"
+							]
+						},
+						"_presentationDuration": {
+							"oneof": [
+								"presentationDuration"
+							]
+						},
+						"_timeShiftBufferDepth": {
+							"oneof": [
+								"timeShiftBufferDepth"
+							]
+						},
+						"_indexRange": {
+							"oneof": [
+								"indexRange"
+							]
+						},
+						"_indexRangeExact": {
+							"oneof": [
+								"indexRangeExact"
+							]
+						},
+						"_availabilityTimeOffset": {
+							"oneof": [
+								"availabilityTimeOffset"
+							]
+						},
+						"_availabilityTimeComplete": {
+							"oneof": [
+								"availabilityTimeComplete"
+							]
+						},
+						"_Initialization": {
+							"oneof": [
+								"Initialization"
+							]
+						},
+						"_RepresentationIndex": {
+							"oneof": [
+								"RepresentationIndex"
+							]
+						}
+					},
+					"fields": {
+						"timescale": {
+							"type": "uint32",
+							"id": 1001,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"presentationTimeOffset": {
+							"type": "uint64",
+							"id": 1002,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"eptDelta": {
+							"type": "uint64",
+							"id": 1003,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"pdDelta": {
+							"type": "uint64",
+							"id": 1004,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"presentationDuration": {
+							"type": "uint64",
+							"id": 1005,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"timeShiftBufferDepth": {
+							"type": "uint64",
+							"id": 1006,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"indexRange": {
+							"type": "string",
+							"id": 1007,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"indexRangeExact": {
+							"type": "bool",
+							"id": 1008,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"availabilityTimeOffset": {
+							"type": "string",
+							"id": 1009,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"availabilityTimeComplete": {
+							"type": "bool",
+							"id": 1010,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"Initialization": {
+							"type": "string",
+							"id": 1101,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"RepresentationIndex": {
+							"type": "string",
+							"id": 1102,
+							"options": {
+								"proto3_optional": true
+							}
+						}
+					}
+				},
+				"MultipleSegmentBaseInformation": {
+					"oneofs": {
+						"_timescale": {
+							"oneof": [
+								"timescale"
+							]
+						},
+						"_presentationTimeOffset": {
+							"oneof": [
+								"presentationTimeOffset"
+							]
+						},
+						"_eptDelta": {
+							"oneof": [
+								"eptDelta"
+							]
+						},
+						"_pdDelta": {
+							"oneof": [
+								"pdDelta"
+							]
+						},
+						"_presentationDuration": {
+							"oneof": [
+								"presentationDuration"
+							]
+						},
+						"_timeShiftBufferDepth": {
+							"oneof": [
+								"timeShiftBufferDepth"
+							]
+						},
+						"_indexRange": {
+							"oneof": [
+								"indexRange"
+							]
+						},
+						"_indexRangeExact": {
+							"oneof": [
+								"indexRangeExact"
+							]
+						},
+						"_availabilityTimeOffset": {
+							"oneof": [
+								"availabilityTimeOffset"
+							]
+						},
+						"_availabilityTimeComplete": {
+							"oneof": [
+								"availabilityTimeComplete"
+							]
+						},
+						"_duration": {
+							"oneof": [
+								"duration"
+							]
+						},
+						"_startNumber": {
+							"oneof": [
+								"startNumber"
+							]
+						},
+						"_endNumber": {
+							"oneof": [
+								"endNumber"
+							]
+						},
+						"_Initialization": {
+							"oneof": [
+								"Initialization"
+							]
+						},
+						"_RepresentationIndex": {
+							"oneof": [
+								"RepresentationIndex"
+							]
+						},
+						"_SegmentTimeline": {
+							"oneof": [
+								"SegmentTimeline"
+							]
+						},
+						"_BitstreamSwitching": {
+							"oneof": [
+								"BitstreamSwitching"
+							]
+						}
+					},
+					"fields": {
+						"timescale": {
+							"type": "uint32",
+							"id": 1001,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"presentationTimeOffset": {
+							"type": "uint64",
+							"id": 1002,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"eptDelta": {
+							"type": "uint64",
+							"id": 1003,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"pdDelta": {
+							"type": "uint64",
+							"id": 1004,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"presentationDuration": {
+							"type": "uint64",
+							"id": 1005,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"timeShiftBufferDepth": {
+							"type": "uint64",
+							"id": 1006,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"indexRange": {
+							"type": "string",
+							"id": 1007,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"indexRangeExact": {
+							"type": "bool",
+							"id": 1008,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"availabilityTimeOffset": {
+							"type": "string",
+							"id": 1009,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"availabilityTimeComplete": {
+							"type": "bool",
+							"id": 1010,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"duration": {
+							"type": "uint64",
+							"id": 1021,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"startNumber": {
+							"type": "uint32",
+							"id": 1022,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"endNumber": {
+							"type": "uint32",
+							"id": 1023,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"Initialization": {
+							"type": "string",
+							"id": 1101,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"RepresentationIndex": {
+							"type": "string",
+							"id": 1102,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"SegmentTimeline": {
+							"type": "SegmentTimelineType",
+							"id": 1121,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"BitstreamSwitching": {
+							"type": "string",
+							"id": 1122,
+							"options": {
+								"proto3_optional": true
+							}
+						}
+					}
+				},
+				"SegmentListType": {
+					"oneofs": {
+						"_timescale": {
+							"oneof": [
+								"timescale"
+							]
+						},
+						"_presentationTimeOffset": {
+							"oneof": [
+								"presentationTimeOffset"
+							]
+						},
+						"_eptDelta": {
+							"oneof": [
+								"eptDelta"
+							]
+						},
+						"_pdDelta": {
+							"oneof": [
+								"pdDelta"
+							]
+						},
+						"_presentationDuration": {
+							"oneof": [
+								"presentationDuration"
+							]
+						},
+						"_timeShiftBufferDepth": {
+							"oneof": [
+								"timeShiftBufferDepth"
+							]
+						},
+						"_indexRange": {
+							"oneof": [
+								"indexRange"
+							]
+						},
+						"_indexRangeExact": {
+							"oneof": [
+								"indexRangeExact"
+							]
+						},
+						"_availabilityTimeOffset": {
+							"oneof": [
+								"availabilityTimeOffset"
+							]
+						},
+						"_availabilityTimeComplete": {
+							"oneof": [
+								"availabilityTimeComplete"
+							]
+						},
+						"_duration": {
+							"oneof": [
+								"duration"
+							]
+						},
+						"_startNumber": {
+							"oneof": [
+								"startNumber"
+							]
+						},
+						"_endNumber": {
+							"oneof": [
+								"endNumber"
+							]
+						},
+						"_Initialization": {
+							"oneof": [
+								"Initialization"
+							]
+						},
+						"_RepresentationIndex": {
+							"oneof": [
+								"RepresentationIndex"
+							]
+						},
+						"_SegmentTimeline": {
+							"oneof": [
+								"SegmentTimeline"
+							]
+						},
+						"_BitstreamSwitching": {
+							"oneof": [
+								"BitstreamSwitching"
+							]
+						},
+						"_href": {
+							"oneof": [
+								"href"
+							]
+						},
+						"_actuate": {
+							"oneof": [
+								"actuate"
+							]
+						}
+					},
+					"fields": {
+						"timescale": {
+							"type": "uint32",
+							"id": 1001,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"presentationTimeOffset": {
+							"type": "uint64",
+							"id": 1002,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"eptDelta": {
+							"type": "uint64",
+							"id": 1003,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"pdDelta": {
+							"type": "uint64",
+							"id": 1004,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"presentationDuration": {
+							"type": "uint64",
+							"id": 1005,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"timeShiftBufferDepth": {
+							"type": "uint64",
+							"id": 1006,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"indexRange": {
+							"type": "string",
+							"id": 1007,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"indexRangeExact": {
+							"type": "bool",
+							"id": 1008,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"availabilityTimeOffset": {
+							"type": "string",
+							"id": 1009,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"availabilityTimeComplete": {
+							"type": "bool",
+							"id": 1010,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"duration": {
+							"type": "uint64",
+							"id": 1021,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"startNumber": {
+							"type": "uint32",
+							"id": 1022,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"endNumber": {
+							"type": "uint32",
+							"id": 1023,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"Initialization": {
+							"type": "string",
+							"id": 1101,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"RepresentationIndex": {
+							"type": "string",
+							"id": 1102,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"SegmentTimeline": {
+							"type": "SegmentTimelineType",
+							"id": 1121,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"BitstreamSwitching": {
+							"type": "string",
+							"id": 1122,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"href": {
+							"type": "string",
+							"id": 10,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"actuate": {
+							"type": "string",
+							"id": 6,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"SegmentURL": {
+							"rule": "repeated",
+							"type": "SegmentURLType",
+							"id": 5
+						}
+					}
+				},
+				"SegmentURLType": {
+					"oneofs": {
+						"_index": {
+							"oneof": [
+								"index"
+							]
+						},
+						"_indexRange": {
+							"oneof": [
+								"indexRange"
+							]
+						},
+						"_media": {
+							"oneof": [
+								"media"
+							]
+						},
+						"_mediaRange": {
+							"oneof": [
+								"mediaRange"
+							]
+						}
+					},
+					"fields": {
+						"index": {
+							"type": "string",
+							"id": 1,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"indexRange": {
+							"type": "string",
+							"id": 2,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"media": {
+							"type": "string",
+							"id": 3,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"mediaRange": {
+							"type": "string",
+							"id": 4,
+							"options": {
+								"proto3_optional": true
+							}
+						}
+					}
+				},
+				"SegmentTemplateType": {
+					"oneofs": {
+						"_timescale": {
+							"oneof": [
+								"timescale"
+							]
+						},
+						"_presentationTimeOffset": {
+							"oneof": [
+								"presentationTimeOffset"
+							]
+						},
+						"_eptDelta": {
+							"oneof": [
+								"eptDelta"
+							]
+						},
+						"_pdDelta": {
+							"oneof": [
+								"pdDelta"
+							]
+						},
+						"_presentationDuration": {
+							"oneof": [
+								"presentationDuration"
+							]
+						},
+						"_timeShiftBufferDepth": {
+							"oneof": [
+								"timeShiftBufferDepth"
+							]
+						},
+						"_indexRange": {
+							"oneof": [
+								"indexRange"
+							]
+						},
+						"_indexRangeExact": {
+							"oneof": [
+								"indexRangeExact"
+							]
+						},
+						"_availabilityTimeOffset": {
+							"oneof": [
+								"availabilityTimeOffset"
+							]
+						},
+						"_availabilityTimeComplete": {
+							"oneof": [
+								"availabilityTimeComplete"
+							]
+						},
+						"_duration": {
+							"oneof": [
+								"duration"
+							]
+						},
+						"_startNumber": {
+							"oneof": [
+								"startNumber"
+							]
+						},
+						"_endNumber": {
+							"oneof": [
+								"endNumber"
+							]
+						},
+						"_Initialization": {
+							"oneof": [
+								"Initialization"
+							]
+						},
+						"_RepresentationIndex": {
+							"oneof": [
+								"RepresentationIndex"
+							]
+						},
+						"_SegmentTimeline": {
+							"oneof": [
+								"SegmentTimeline"
+							]
+						},
+						"_BitstreamSwitching": {
+							"oneof": [
+								"BitstreamSwitching"
+							]
+						},
+						"_media": {
+							"oneof": [
+								"media"
+							]
+						},
+						"_index": {
+							"oneof": [
+								"index"
+							]
+						},
+						"_initialization": {
+							"oneof": [
+								"initialization"
+							]
+						},
+						"_bitstreamSwitching": {
+							"oneof": [
+								"bitstreamSwitching"
+							]
+						}
+					},
+					"fields": {
+						"timescale": {
+							"type": "uint32",
+							"id": 1001,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"presentationTimeOffset": {
+							"type": "uint64",
+							"id": 1002,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"eptDelta": {
+							"type": "uint64",
+							"id": 1003,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"pdDelta": {
+							"type": "uint64",
+							"id": 1004,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"presentationDuration": {
+							"type": "uint64",
+							"id": 1005,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"timeShiftBufferDepth": {
+							"type": "uint64",
+							"id": 1006,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"indexRange": {
+							"type": "string",
+							"id": 1007,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"indexRangeExact": {
+							"type": "bool",
+							"id": 1008,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"availabilityTimeOffset": {
+							"type": "string",
+							"id": 1009,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"availabilityTimeComplete": {
+							"type": "bool",
+							"id": 1010,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"duration": {
+							"type": "uint64",
+							"id": 1021,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"startNumber": {
+							"type": "uint32",
+							"id": 1022,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"endNumber": {
+							"type": "uint32",
+							"id": 1023,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"Initialization": {
+							"type": "string",
+							"id": 1101,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"RepresentationIndex": {
+							"type": "string",
+							"id": 1102,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"SegmentTimeline": {
+							"type": "SegmentTimelineType",
+							"id": 1121,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"BitstreamSwitching": {
+							"type": "string",
+							"id": 1122,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"media": {
+							"type": "string",
+							"id": 13,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"index": {
+							"type": "string",
+							"id": 9,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"initialization": {
+							"type": "string",
+							"id": 12,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"bitstreamSwitching": {
+							"type": "string",
+							"id": 7,
+							"options": {
+								"proto3_optional": true
+							}
+						}
+					}
+				},
+				"EventType": {
+					"oneofs": {
+						"_duration": {
+							"oneof": [
+								"duration"
+							]
+						},
+						"_id": {
+							"oneof": [
+								"id"
+							]
+						},
+						"_messageData": {
+							"oneof": [
+								"messageData"
+							]
+						},
+						"_presentationTime": {
+							"oneof": [
+								"presentationTime"
+							]
+						}
+					},
+					"fields": {
+						"duration": {
+							"type": "uint64",
+							"id": 1,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"id": {
+							"type": "uint32",
+							"id": 2,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"messageData": {
+							"type": "string",
+							"id": 3,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"presentationTime": {
+							"type": "uint64",
+							"id": 4,
+							"options": {
+								"proto3_optional": true
+							}
+						}
+					}
+				},
+				"ProgramInformationType": {
+					"oneofs": {
+						"_Copyright": {
+							"oneof": [
+								"Copyright"
+							]
+						},
+						"_Source": {
+							"oneof": [
+								"Source"
+							]
+						},
+						"_Title": {
+							"oneof": [
+								"Title"
+							]
+						},
+						"_lang": {
+							"oneof": [
+								"lang"
+							]
+						},
+						"_moreInformationURL": {
+							"oneof": [
+								"moreInformationURL"
+							]
+						}
+					},
+					"fields": {
+						"Copyright": {
+							"type": "string",
+							"id": 1,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"Source": {
+							"type": "string",
+							"id": 2,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"Title": {
+							"type": "string",
+							"id": 3,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"lang": {
+							"type": "string",
+							"id": 4,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"moreInformationURL": {
+							"type": "string",
+							"id": 5,
+							"options": {
+								"proto3_optional": true
+							}
+						}
+					}
+				},
+				"RangeType": {
+					"oneofs": {
+						"_duration": {
+							"oneof": [
+								"duration"
+							]
+						},
+						"_starttime": {
+							"oneof": [
+								"starttime"
+							]
+						}
+					},
+					"fields": {
+						"duration": {
+							"type": "float",
+							"id": 1,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"starttime": {
+							"type": "float",
+							"id": 2,
+							"options": {
+								"proto3_optional": true
+							}
+						}
+					}
+				},
+				"SType": {
+					"oneofs": {
+						"_n": {
+							"oneof": [
+								"n"
+							]
+						},
+						"_r": {
+							"oneof": [
+								"r"
+							]
+						},
+						"_t": {
+							"oneof": [
+								"t"
+							]
+						}
+					},
+					"fields": {
+						"d": {
+							"rule": "required",
+							"type": "uint64",
+							"id": 1
+						},
+						"n": {
+							"type": "uint64",
+							"id": 2,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"r": {
+							"type": "int32",
+							"id": 3,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"t": {
+							"type": "uint64",
+							"id": 4,
+							"options": {
+								"proto3_optional": true
+							}
+						}
+					}
+				},
+				"SegmentTimelineType": {
+					"fields": {
+						"S": {
+							"rule": "repeated",
+							"type": "SType",
+							"id": 1
+						}
+					}
+				},
+				"SubsetType": {
+					"oneofs": {
+						"_id": {
+							"oneof": [
+								"id"
+							]
+						}
+					},
+					"fields": {
+						"contains": {
+							"rule": "repeated",
+							"type": "uint32",
+							"id": 1
+						},
+						"id": {
+							"type": "string",
+							"id": 2,
+							"options": {
+								"proto3_optional": true
+							}
+						}
+					}
+				},
+				"SwitchingType": {
+					"oneofs": {
+						"_type": {
+							"oneof": [
+								"type"
+							]
+						}
+					},
+					"fields": {
+						"interval": {
+							"rule": "required",
+							"type": "uint32",
+							"id": 1
+						},
+						"type": {
+							"type": "SwitchingTypeType",
+							"id": 2,
+							"options": {
+								"proto3_optional": true
+							}
+						}
+					},
+					"nested": {
+						"SwitchingTypeType": {
+							"values": {
+								"SwitchingTypeType_bitstream": 1,
+								"SwitchingTypeType_media": 2
+							}
+						}
+					}
+				},
+				"URLType": {
+					"oneofs": {
+						"_range": {
+							"oneof": [
+								"range"
+							]
+						},
+						"_sourceURL": {
+							"oneof": [
+								"sourceURL"
+							]
+						}
+					},
+					"fields": {
+						"range": {
+							"type": "string",
+							"id": 1,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"sourceURL": {
+							"type": "string",
+							"id": 2,
+							"options": {
+								"proto3_optional": true
+							}
+						}
+					}
+				},
+				"ContentComponentType": {
+					"oneofs": {
+						"_id": {
+							"oneof": [
+								"id"
+							]
+						},
+						"_lang": {
+							"oneof": [
+								"lang"
+							]
+						},
+						"_contentType": {
+							"oneof": [
+								"contentType"
+							]
+						},
+						"_par": {
+							"oneof": [
+								"par"
+							]
+						},
+						"_atg": {
+							"oneof": [
+								"atg"
+							]
+						}
+					},
+					"fields": {
+						"id": {
+							"type": "string",
+							"id": 1,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"lang": {
+							"type": "string",
+							"id": 2,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"contentType": {
+							"type": "string",
+							"id": 3,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"par": {
+							"type": "string",
+							"id": 4,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"atg": {
+							"type": "string",
+							"id": 5,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"Accessibility": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 101
+						},
+						"Role": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 102
+						},
+						"Rating": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 103
+						},
+						"Viewpoint": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 104
+						}
+					}
+				},
+				"EventStreamType": {
+					"oneofs": {
+						"_actuate": {
+							"oneof": [
+								"actuate"
+							]
+						},
+						"_href": {
+							"oneof": [
+								"href"
+							]
+						},
+						"_messageData": {
+							"oneof": [
+								"messageData"
+							]
+						},
+						"_timescale": {
+							"oneof": [
+								"timescale"
+							]
+						},
+						"_value": {
+							"oneof": [
+								"value"
+							]
+						}
+					},
+					"fields": {
+						"Event": {
+							"rule": "repeated",
+							"type": "EventType",
+							"id": 1
+						},
+						"actuate": {
+							"type": "string",
+							"id": 2,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"href": {
+							"type": "string",
+							"id": 3,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"messageData": {
+							"type": "string",
+							"id": 4,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"schemeIdUri": {
+							"rule": "required",
+							"type": "string",
+							"id": 5
+						},
+						"timescale": {
+							"type": "uint32",
+							"id": 6,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"value": {
+							"type": "string",
+							"id": 7,
+							"options": {
+								"proto3_optional": true
+							}
+						}
+					}
+				},
+				"MetricsType": {
+					"fields": {
+						"Range": {
+							"rule": "repeated",
+							"type": "RangeType",
+							"id": 1
+						},
+						"Reporting": {
+							"rule": "repeated",
+							"type": "DescriptorType",
+							"id": 2
+						},
+						"metrics": {
+							"rule": "required",
+							"type": "string",
+							"id": 3
+						}
+					}
+				},
+				"SubRepresentationType": {
+					"oneofs": {
+						"_level": {
+							"oneof": [
+								"level"
+							]
+						},
+						"_bandwidth": {
+							"oneof": [
+								"bandwidth"
+							]
+						}
+					},
+					"fields": {
+						"level": {
+							"type": "uint32",
+							"id": 1,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"dependencyLevel": {
+							"rule": "repeated",
+							"type": "uint32",
+							"id": 2
+						},
+						"bandwidth": {
+							"type": "uint32",
+							"id": 3,
+							"options": {
+								"proto3_optional": true
+							}
+						},
+						"contentComponent": {
+							"rule": "repeated",
+							"type": "string",
+							"id": 4
+						}
+					}
+				},
+				"LabelType": {
+					"fields": {}
+				},
+				"ProducerReferenceTimeType": {
+					"fields": {}
+				},
+				"ContentPopularityRateType": {
+					"fields": {}
+				},
+				"ResyncType": {
+					"fields": {}
+				},
+				"ExtendedBandwidthType": {
+					"fields": {}
+				},
+				"RandomAccessType": {
+					"fields": {}
+				}
+			}
+		}
+	}
+}

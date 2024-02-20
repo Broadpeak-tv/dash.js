@@ -226,7 +226,7 @@ function HTTPLoader(cfg) {
 
                 if (httpResponse.status >= 200 && httpResponse.status <= 299) {
                     if (config.success) {
-                        config.success(httpResponse.data, httpResponse.statusText, httpResponse.url);
+                        config.success(httpResponse.data, httpResponse.statusText, httpResponse.url, httpResponse.headers['content-type']);
                     }
 
                     if (config.complete) {
@@ -532,7 +532,8 @@ function HTTPLoader(cfg) {
         let loader;
         let fileLoaderType;
 
-        if (request.hasOwnProperty('availabilityTimeComplete') && request.availabilityTimeComplete === false && window.fetch && request.responseType === 'arraybuffer' && request.type === HTTPRequest.MEDIA_SEGMENT_TYPE) {
+        if ((request.type === HTTPRequest.MPD_TYPE) ||
+            (request.hasOwnProperty('availabilityTimeComplete') && request.availabilityTimeComplete === false && window.fetch && request.responseType === 'arraybuffer' && request.type === HTTPRequest.MEDIA_SEGMENT_TYPE)) {
             if (!fetchLoader) {
                 fetchLoader = FetchLoader(context).create();
                 fetchLoader.setConfig({

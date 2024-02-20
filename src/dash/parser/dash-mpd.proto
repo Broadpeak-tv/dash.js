@@ -1,0 +1,557 @@
+package dash;
+syntax = "proto3";
+
+option optimize_for = SPEED;
+
+
+message MPD
+{
+  // Attributes
+	optional string id = 1;
+	required string profiles = 2;
+	optional string type = 3;
+	optional uint64 availabilityStartTime = 4;
+	optional uint64 publishTime = 5;
+	optional uint64 availabilityEndTime = 6;
+	optional float mediaPresentationDuration = 7;
+	optional float minimumUpdatePeriod = 8;
+	required float minBufferTime = 9;
+	optional float timeShiftBufferDepth = 10;
+	optional float suggestedPresentationDelay = 11;
+	optional float maxSegmentDuration = 12;
+	optional float maxSubsegmentDuration = 13;
+
+  // Elements
+	repeated ProgramInformationType ProgramInformation = 101;
+  repeated BaseURLType BaseURL = 102;
+	repeated string Location = 103;
+	repeated string PatchLocation = 104;
+	repeated ServiceDescriptionType ServiceDescription = 105;
+	repeated ContentProtectionType ContentProtection = 106;
+	repeated PeriodType Period = 107;
+	repeated MetricsType Metrics = 108;
+	repeated DescriptorType EssentialProperty = 109;
+	repeated DescriptorType SupplementalProperty = 110;
+	repeated DescriptorType UTCTiming = 111;
+}
+
+message BaseURLType
+{
+	optional string _text = 1;
+}
+
+message PeriodType
+{
+  // Attributes
+	optional string href = 1;
+	optional string actuate = 2;
+	optional string id = 3;
+	optional float start = 4;
+	optional float duration = 5;
+	optional bool bitstreamSwitching = 6;
+
+  // Elements
+	repeated BaseURLType BaseURL = 101;
+	optional SegmentBaseType SegmentBase = 102;
+	optional SegmentListType SegmentList = 103;
+	optional SegmentTemplateType SegmentTemplate = 104;
+	optional DescriptorType AssetIdentifier = 105;
+	repeated EventStreamType EventStream = 106;
+	repeated ServiceDescriptionType ServiceDescription = 107;
+	repeated ContentProtectionType ContentProtection = 108;
+  repeated AdaptationSetType AdaptationSet = 109;
+	repeated SubsetType Subset = 110;
+	repeated DescriptorType SupplementalProperty = 111;
+}
+
+message ContentProtectionType {
+  required string schemeIdUri = 1;
+  optional string value = 2;
+  optional string ref = 3;
+  optional string refId = 4;
+  optional string reobustness = 5;
+}
+
+message CommonAttributesAndElements
+{
+  // Attributes
+	optional string profiles = 1001;
+	optional uint32 height = 1002;
+	optional uint32 width = 1003;
+	optional string sar = 1004;
+	optional string frameRate = 1005;
+	optional uint32 audioSamplingRate = 1006;
+	required string mimeType = 1007;
+	optional string segmentProfiles = 1008;
+	optional string codecs = 1009;
+	optional string containerProfiles = 1010;
+	optional double maximumSAPPeriod = 1011;
+	optional uint32 startWithSAP = 1012;
+	optional double maxPlayoutRate = 1013;
+	optional bool codingDependency = 1014;
+	optional string scanType = 1015;
+	optional string selectionPriority = 1016;
+	optional string tag = 1017;
+
+  // Elements
+	repeated DescriptorType FramePacking = 1101;
+	repeated DescriptorType AudioChannelConfiguration = 1102;
+	repeated DescriptorType ContentProtection = 1103;
+	repeated DescriptorType OutputProtection = 1104;
+	repeated DescriptorType EssentialProperty = 1105;
+	repeated DescriptorType SupplementalProperty = 1107;
+	repeated EventStreamType InbandEventStream = 1108;
+	repeated SwitchingType Switching = 1109;
+	repeated RandomAccessType RandomAccess = 1110;
+	repeated LabelType GroupLabel = 1111;
+	repeated LabelType Label = 1112;
+	repeated ProducerReferenceTimeType ProducerReferenceTime = 1113;
+  repeated ContentPopularityRateType ContentPopularityRate = 1114;
+  repeated ResyncType Resync = 1115;
+}
+
+
+message AdaptationSetType
+{
+  // Common Attributes
+	optional string profiles = 1001;
+	optional uint32 height = 1002;
+	optional uint32 width = 1003;
+	optional string sar = 1004;
+	optional string frameRate = 1005;
+	optional uint32 audioSamplingRate = 1006;
+	optional string mimeType = 1007;
+	optional string segmentProfiles = 1008;
+	optional string codecs = 1009;
+	optional string containerProfiles = 1010;
+	optional double maximumSAPPeriod = 1011;
+	optional uint32 startWithSAP = 1012;
+	optional double maxPlayoutRate = 1013;
+	optional bool codingDependency = 1014;
+	optional string scanType = 1015;
+	optional string selectionPriority = 1016;
+	optional string tag = 1017;
+
+  // Attributes
+	optional string href = 1;
+	optional string actuate = 2;
+	optional string id = 3;
+	optional uint32 group = 4;
+	optional string lang = 5;
+	optional string contentType = 6;
+	optional string par = 7;
+	optional uint32 minBandwidth = 8;
+	optional uint32 maxBandwidth = 9;
+	optional uint32 minWidth = 10;
+	optional uint32 maxWidth = 11;
+	optional uint32 minHeight = 12;
+	optional uint32 maxHeight = 13;
+	optional string minFrameRate = 14;
+	optional string maxFrameRate = 15;
+	optional bool segmentAlignment = 16;
+	optional bool bitstreamSwitching = 17;
+	optional bool subsegmentAlignment = 18;
+	optional uint32 subsegmentStartsWithSAP = 19;
+	optional string initializationSetRef = 20;
+	optional string initializationPrincipal = 21;
+
+  // Common Elements
+	repeated DescriptorType FramePacking = 1101;
+	repeated DescriptorType AudioChannelConfiguration = 1102;
+	repeated DescriptorType ContentProtection = 1103;
+	repeated DescriptorType OutputProtection = 1104;
+	repeated DescriptorType EssentialProperty = 1105;
+	repeated DescriptorType SupplementalProperty = 1107;
+	repeated EventStreamType InbandEventStream = 1108;
+	repeated SwitchingType Switching = 1109;
+	repeated RandomAccessType RandomAccess = 1110;
+	repeated LabelType GroupLabel = 1111;
+	repeated LabelType Label = 1112;
+	repeated ProducerReferenceTimeType ProducerReferenceTime = 1113;
+  repeated ContentPopularityRateType ContentPopularityRate = 1114;
+  repeated ResyncType Resync = 1115;
+
+  // Elements
+	// repeated DescriptorType Accessibility = 101;
+	repeated DescriptorType Role = 102;
+	repeated DescriptorType Rating = 103;
+	repeated DescriptorType Viewpoint = 104;
+	repeated ContentComponentType ContentComponent = 105;
+	repeated BaseURLType BaseURL = 106;
+	optional SegmentBaseType SegmentBase = 107;
+	optional SegmentListType SegmentList = 108;
+	optional SegmentTemplateType SegmentTemplate = 109;
+	repeated RepresentationType Representation = 110;
+}
+
+message RepresentationType
+{
+  // Common Attributes
+	optional string profiles = 1001;
+	optional uint32 height = 1002;
+	optional uint32 width = 1003;
+	optional string sar = 1004;
+	optional string frameRate = 1005;
+	optional uint32 audioSamplingRate = 1006;
+	optional string mimeType = 1007;
+	optional string segmentProfiles = 1008;
+	optional string codecs = 1009;
+	optional string containerProfiles = 1010;
+	optional double maximumSAPPeriod = 1011;
+	optional uint32 startWithSAP = 1012;
+	optional double maxPlayoutRate = 1013;
+	optional bool codingDependency = 1014;
+	optional string scanType = 1015;
+	optional string selectionPriority = 1016;
+	optional string tag = 1017;
+
+  // Attributes
+	required string id = 1;
+	required uint32 bandwidth = 2;
+	optional uint32 qualityRanking = 3;
+	optional string dependencyId = 4;
+	optional string associationId = 5;
+	optional string associationType = 6;
+	optional string mediaStreamStructureId = 7;
+
+  // Common Elements
+	repeated DescriptorType FramePacking = 1101;
+	repeated DescriptorType AudioChannelConfiguration = 1102;
+	repeated DescriptorType ContentProtection = 1103;
+	repeated DescriptorType OutputProtection = 1104;
+	repeated DescriptorType EssentialProperty = 1105;
+	repeated DescriptorType SupplementalProperty = 1107;
+	repeated EventStreamType InbandEventStream = 1108;
+	repeated SwitchingType Switching = 1109;
+	repeated RandomAccessType RandomAccess = 1110;
+	repeated LabelType GroupLabel = 1111;
+	repeated LabelType Label = 1112;
+	repeated ProducerReferenceTimeType ProducerReferenceTime = 1113;
+  repeated ContentPopularityRateType ContentPopularityRate = 1114;
+  repeated ResyncType Resync = 1115;
+
+  // Elements
+	repeated BaseURLType BaseURL = 101;
+	optional ExtendedBandwidthType ExtendedBandwidth = 102;
+  optional SubRepresentationType SubRepresentation = 103;
+	optional SegmentBaseType SegmentBase = 104;
+	optional SegmentListType SegmentList = 105;
+	optional SegmentTemplateType SegmentTemplate = 106;
+}
+
+message ServiceDescriptionType
+{
+  required string id = 1;
+  repeated DescriptorType Scope = 2;
+  message LatencyType
+  {
+    required string referenceId = 1;
+    optional uint32 target = 2;
+    optional uint32 max = 3;
+    optional uint32 min = 45;
+  }
+  repeated LatencyType Latency = 3;
+}
+
+// message BaseURLType
+// {
+//   required string content = 1;
+// 	optional string serviceLocation = 2;
+// 	optional string byteRange = 3;
+// 	optional double availabilityTimeOffset = 4;
+// 	optional string availabilityTimeComplete = 5;
+// 	optional string timeShiftBufferDepth = 6;
+// 	optional bool rangeAccess = 7;
+// }
+
+message DescriptorType
+{
+	optional string id = 1;
+	required string schemeIdUri = 2;
+	optional string value = 3;
+}
+
+message SegmentBaseType
+{
+  // Attributes
+	optional uint32 timescale = 1001;
+	optional uint64 presentationTimeOffset = 1002;
+	optional uint64 eptDelta = 1003;
+	optional uint64 pdDelta = 1004;
+	optional uint64 presentationDuration = 1005;
+	optional uint64 timeShiftBufferDepth = 1006;
+	optional string indexRange = 1007;
+	optional bool indexRangeExact = 1008;
+	optional string availabilityTimeOffset = 1009;
+	optional bool availabilityTimeComplete = 1010;
+
+  // Elements
+	optional string Initialization = 1101;
+	optional string RepresentationIndex = 1102;
+
+	// optional SegmentTimelineType SegmentTimeline = 4;
+	// repeated SegmentURLType SegmentURL = 5;
+	// enum actuateType
+	// {
+	// 	actuateType_none = 1;
+	// 	actuateType_onLoad = 2;
+	// 	actuateType_onRequest = 3;
+	// 	actuateType_other = 4;
+	// }
+	// optional actuateType actuate = 6;
+	// optional string bitstreamSwitching = 9;
+	// optional uint32 duration = 10;
+	// optional string href = 11;
+	// optional string index = 12;
+	// optional string initialization = 15;
+	// optional string media = 16;
+}
+
+message MultipleSegmentBaseInformation
+{
+  // SegmentBase Attributes
+	optional uint32 timescale = 1001;
+	optional uint64 presentationTimeOffset = 1002;
+	optional uint64 eptDelta = 1003;
+	optional uint64 pdDelta = 1004;
+	optional uint64 presentationDuration = 1005;
+	optional uint64 timeShiftBufferDepth = 1006;
+	optional string indexRange = 1007;
+	optional bool indexRangeExact = 1008;
+	optional string availabilityTimeOffset = 1009;
+	optional bool availabilityTimeComplete = 1010;
+
+  // Attributes
+  optional uint64 duration = 1021;
+  optional uint32 startNumber = 1022;
+  optional uint32 endNumber = 1023;
+
+  // SegmentBase Elements
+	optional string Initialization = 1101;
+	optional string RepresentationIndex = 1102;
+
+  // Elements
+  optional SegmentTimelineType SegmentTimeline = 1121;
+  optional string BitstreamSwitching = 1122;
+}
+
+
+message SegmentListType
+{
+  // MultipleSegmentBaseInformation
+  // SegmentBase Attributes
+	optional uint32 timescale = 1001;
+	optional uint64 presentationTimeOffset = 1002;
+	optional uint64 eptDelta = 1003;
+	optional uint64 pdDelta = 1004;
+	optional uint64 presentationDuration = 1005;
+	optional uint64 timeShiftBufferDepth = 1006;
+	optional string indexRange = 1007;
+	optional bool indexRangeExact = 1008;
+	optional string availabilityTimeOffset = 1009;
+	optional bool availabilityTimeComplete = 1010;
+
+  // Attributes
+  optional uint64 duration = 1021;
+  optional uint32 startNumber = 1022;
+  optional uint32 endNumber = 1023;
+
+  // SegmentBase Elements
+	optional string Initialization = 1101;
+	optional string RepresentationIndex = 1102;
+
+  // Elements
+  optional SegmentTimelineType SegmentTimeline = 1121;
+  optional string BitstreamSwitching = 1122;
+
+
+  // Attributes
+	optional string href = 10;
+	optional string actuate = 6;
+
+  // Elements
+	repeated SegmentURLType SegmentURL = 5;
+}
+
+message SegmentURLType
+{
+	optional string index = 1;
+	optional string indexRange = 2;
+	optional string media = 3;
+	optional string mediaRange = 4;
+}
+
+
+message SegmentTemplateType
+{
+  // MultipleSegmentBaseInformation
+  // SegmentBase Attributes
+	optional uint32 timescale = 1001;
+	optional uint64 presentationTimeOffset = 1002;
+	optional uint64 eptDelta = 1003;
+	optional uint64 pdDelta = 1004;
+	optional uint64 presentationDuration = 1005;
+	optional uint64 timeShiftBufferDepth = 1006;
+	optional string indexRange = 1007;
+	optional bool indexRangeExact = 1008;
+	optional string availabilityTimeOffset = 1009;
+	optional bool availabilityTimeComplete = 1010;
+
+  // Attributes
+  optional uint64 duration = 1021;
+  optional uint32 startNumber = 1022;
+  optional uint32 endNumber = 1023;
+
+  // SegmentBase Elements
+	optional string Initialization = 1101;
+	optional string RepresentationIndex = 1102;
+
+  // Elements
+  optional SegmentTimelineType SegmentTimeline = 1121;
+  optional string BitstreamSwitching = 1122;
+
+  // Attributes
+	optional string media = 13;
+	optional string index = 9;
+	optional string initialization = 12;
+	optional string bitstreamSwitching = 7;
+}
+
+
+message EventType
+{
+	optional uint64 duration = 1;
+	optional uint32 id = 2;
+	optional string messageData = 3;
+	optional uint64 presentationTime = 4;
+}
+
+message ProgramInformationType
+{
+	optional string Copyright = 1;
+	optional string Source = 2;
+	optional string Title = 3;
+	optional string lang = 4;
+	optional string moreInformationURL = 5;
+}
+
+message RangeType
+{
+	optional float duration = 1;
+	optional float starttime = 2;
+}
+
+message SType
+{
+	required uint64 d = 1;
+	optional uint64 n = 2;
+	optional int32 r = 3;
+	optional uint64 t = 4;
+}
+
+message SegmentTimelineType
+{
+	repeated SType S = 1;
+}
+
+message SubsetType
+{
+	repeated uint32 contains = 1;
+	optional string id = 2;
+}
+
+message SwitchingType
+{
+	required uint32 interval = 1;
+	enum SwitchingTypeType
+	{
+		SwitchingTypeType_bitstream = 1;
+		SwitchingTypeType_media = 2;
+	}
+	optional SwitchingTypeType type = 2;
+}
+
+message URLType
+{
+	optional string range = 1;
+	optional string sourceURL = 2;
+}
+
+
+message ContentComponentType
+{
+  // Attributes
+	optional string id = 1;
+	optional string lang = 2;
+	optional string contentType = 3;
+	optional string par = 4;
+	optional string atg = 5;
+
+  // Elements
+  repeated DescriptorType Accessibility = 101;
+	repeated DescriptorType Role = 102;
+	repeated DescriptorType Rating = 103;
+	repeated DescriptorType Viewpoint = 104;
+}
+
+message EventStreamType
+{
+	repeated EventType Event = 1;
+	optional string actuate = 2;
+	optional string href = 3;
+	optional string messageData = 4;
+	required string schemeIdUri = 5;
+	optional uint32 timescale = 6;
+	optional string value = 7;
+}
+
+message MetricsType
+{
+	repeated RangeType Range = 1;
+	repeated DescriptorType Reporting = 2;
+	required string metrics = 3;
+}
+
+
+message SubRepresentationType
+{
+  extend CommonAttributesAndElements {
+
+  }
+
+  // Attributes
+	optional uint32 level = 1;
+	repeated uint32 dependencyLevel = 2;
+	optional uint32 bandwidth = 3;
+	repeated string contentComponent = 4;
+}
+
+message LabelType
+{
+  // TODO
+}
+
+message ProducerReferenceTimeType
+{
+  // TODO
+}
+
+message ContentPopularityRateType
+{
+  // TODO
+}
+
+message ResyncType
+{
+  // TODO
+}
+
+message ExtendedBandwidthType
+{
+  // TODO
+}
+
+message RandomAccessType
+{
+  // TODO
+}
