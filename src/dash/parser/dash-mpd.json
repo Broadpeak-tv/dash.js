@@ -1956,7 +1956,7 @@
 							}
 						},
 						"availabilityTimeOffset": {
-							"type": "string",
+							"type": "double",
 							"id": 1009,
 							"options": {
 								"proto3_optional": true
@@ -2131,7 +2131,7 @@
 							}
 						},
 						"availabilityTimeOffset": {
-							"type": "string",
+							"type": "double",
 							"id": 1009,
 							"options": {
 								"proto3_optional": true
@@ -2351,7 +2351,7 @@
 							}
 						},
 						"availabilityTimeOffset": {
-							"type": "string",
+							"type": "double",
 							"id": 1009,
 							"options": {
 								"proto3_optional": true
@@ -2654,7 +2654,7 @@
 							}
 						},
 						"availabilityTimeOffset": {
-							"type": "string",
+							"type": "double",
 							"id": 1009,
 							"options": {
 								"proto3_optional": true
