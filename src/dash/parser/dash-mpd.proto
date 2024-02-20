@@ -37,7 +37,7 @@ message MPD
 
 message BaseURLType
 {
-	optional string _text = 1;
+	optional string __text = 1;
 }
 
 message PeriodType
@@ -282,7 +282,7 @@ message SegmentBaseType
 	optional uint64 timeShiftBufferDepth = 1006;
 	optional string indexRange = 1007;
 	optional bool indexRangeExact = 1008;
-	optional string availabilityTimeOffset = 1009;
+	optional double availabilityTimeOffset = 1009;
 	optional bool availabilityTimeComplete = 1010;
 
   // Elements
@@ -318,7 +318,7 @@ message MultipleSegmentBaseInformation
 	optional uint64 timeShiftBufferDepth = 1006;
 	optional string indexRange = 1007;
 	optional bool indexRangeExact = 1008;
-	optional string availabilityTimeOffset = 1009;
+	optional double availabilityTimeOffset = 1009;
 	optional bool availabilityTimeComplete = 1010;
 
   // Attributes
@@ -348,7 +348,7 @@ message SegmentListType
 	optional uint64 timeShiftBufferDepth = 1006;
 	optional string indexRange = 1007;
 	optional bool indexRangeExact = 1008;
-	optional string availabilityTimeOffset = 1009;
+	optional double availabilityTimeOffset = 1009;
 	optional bool availabilityTimeComplete = 1010;
 
   // Attributes
@@ -394,7 +394,7 @@ message SegmentTemplateType
 	optional uint64 timeShiftBufferDepth = 1006;
 	optional string indexRange = 1007;
 	optional bool indexRangeExact = 1008;
-	optional string availabilityTimeOffset = 1009;
+	optional double availabilityTimeOffset = 1009;
 	optional bool availabilityTimeComplete = 1010;
 
   // Attributes
