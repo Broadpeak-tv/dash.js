@@ -187,13 +187,8 @@ function DashParser(config) {
     function parseProto(data) {
         try {
             const buffer = new Uint8Array(data);
-            const message = MpdMessage.decode(buffer);                        
-            const options = {
-                // longs: String,
-                // enums: String,
-                // bytes: String,
-            }
-            const MPD = MpdMessage.toObject(message, options);
+            const message = MpdMessage.decode(buffer);
+            const MPD = MpdMessage.toObject(message);
             return { MPD }
         } catch (e) {
             return null;
@@ -221,4 +216,4 @@ function DashParser(config) {
 }
 
 DashParser.__dashjs_factory_name = 'DashParser';
-export default FactoryMaker.getClassFactory(DashParser);
+export default FactoryMaker.getSingletonFactory(DashParser);

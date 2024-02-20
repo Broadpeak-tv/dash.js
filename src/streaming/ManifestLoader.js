@@ -82,7 +82,7 @@ function ManifestLoader(config) {
             settings: config.settings
         });
 
-        parser = DashParser(context).create({ debug: debug });
+        parser = DashParser(context).getInstance({ debug: debug });
     }
 
     function onXlinkReady(event) {
