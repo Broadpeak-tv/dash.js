@@ -335,7 +335,7 @@ app.controller('DashController', ['$scope', '$window', 'sources', 'contributors'
 
     // Manifest Proxy
     $scope.manifestProxyEnabled = true;
-    $scope.manifestProxyUrl = 'https://explo.broadpeak.tv:8343/manifest.mpd/proto';
+    $scope.manifestProxyUrl = 'https://explo.broadpeak.tv/manifest.mpd/proto';
 
     ////////////////////////////////////////
     //
