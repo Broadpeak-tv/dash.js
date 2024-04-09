@@ -16,13 +16,13 @@ With this version, you can load manifest in XML original format but aditionnally
 ### Manifest proxy
 To retrieve manifest in JSON or Protobuf format a manifest proxy has been developed and deployed at this url:
 
-[https://explo.broadpeak.tv/manifest.mpd/]()
+[https://explo.broadpeak.tv/manifest.mpd/](https://explo.broadpeak.tv/manifest.mpd/)
 
 In order to retreive transformed manifest you can request it from this proxy by precising the requested format and original manifest url.
 - In JSON format:
-[https://explo.broadpeak.tv/manifest.mpd/json?url=<manifest_url>]()
+[https://explo.broadpeak.tv/manifest.mpd/json?url=<manifest_url>](https://explo.broadpeak.tv/manifest.mpd/json?url=<manifest_url>)
 - In Protobuf format:
-[https://explo.broadpeak.tv/manifest.mpd/proto?url=<manifest_url>]()
+[https://explo.broadpeak.tv/manifest.mpd/proto?url=<manifest_url>](https://explo.broadpeak.tv/manifest.mpd/proto?url=<manifest_url>)
 
 ### Manifest parser
 
@@ -37,7 +37,7 @@ The manifest parser in this version has been updated to apply the appropriate pa
 The reference sample application has been modified to enable using the manifest proxy server.
 
 This reference sample is available at this url:
-[https://broadpeak-tv.github.io/dash.js/samples/dash-if-reference-player/index.html]()
+[https://broadpeak-tv.github.io/dash.js/samples/dash-if-reference-player/index.html](https://broadpeak-tv.github.io/dash.js/samples/dash-if-reference-player/index.html)
 
 Using this sample application you can load manifests and play streams using the manifest proxy.
 
@@ -52,7 +52,7 @@ The devtools console logs provide the processing time for manifest parsing and p
 Protobuf format requires a .proto definition file.
 
 The .proto definition file used by the manifest proxy and this dash.js version is available here: 
-[https://broadpeak-tv.github.io/dash.js/src/dash/parser/dash-mpd.proto]()
+[https://broadpeak-tv.github.io/dash.js/src/dash/parser/dash-mpd.proto](https://broadpeak-tv.github.io/dash.js/src/dash/parser/dash-mpd.proto)
 
 This version is not yet complete but covers a large proportion of sample streams manifests.
 
@@ -67,7 +67,7 @@ For XML format, this benchmarking tool is testing 2 different XML parser:
 - The optimized tXml parser used since dash.js v5
 
 Thie webapp is avaialble at this url:
-[https://broadpeak-tv.github.io/DASH-IF-Conformance/ManifestParser-Frontend/index.html]()
+[https://broadpeak-tv.github.io/DASH-IF-Conformance/ManifestParser-Frontend/index.html](https://broadpeak-tv.github.io/DASH-IF-Conformance/ManifestParser-Frontend/index.html)
 
 
 Here are some examples of numbers (processing time in ms) using this benchmarking tool:
