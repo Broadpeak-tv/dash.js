@@ -62,9 +62,9 @@ A webapp for benchmarking different manifest formats processing time in on web p
 
 This webapp enables loading either url, file or text, and performs 50 cycles of manifest parsing/decoding for each format (XML, JSON, Protobuf), and displays average processing time.
 
-For XML format, this benchmarking tool is testing 2 different XML parser:
-- The DOM parser and xml2json used by dash.js up to v4
-- The optimized tXml parser used since dash.js v5
+For XML format, this benchmarking tool is testing 2 different XML parsers:
+- The DOM parser and ``xml2json`` used by dash.js up to v4
+- The optimized ``tXml`` parser used since dash.js v5
 
 Thie webapp is avaialble at this url:
 [https://broadpeak-tv.github.io/DASH-IF-Conformance/ManifestParser-Frontend/index.html](https://broadpeak-tv.github.io/DASH-IF-Conformance/ManifestParser-Frontend/index.html)
@@ -80,7 +80,7 @@ Here are some examples of numbers (processing time in ms) using this benchmarkin
 
 ### What's next
 
-The processing time of the different parsers need to be benchmarked also on other platforms such as native platforms, SmartTV (Web and Android), mobile, TV dongles etc.
+The processing time of the different parsers need to be benchmarked also on other platforms such as native platforms, SmartTVs (Web and Android), mobiles, TV dongles etc.
 
 The question of processing time shall also be considered in the context of manifest generation tools (packagers) and manifest manipulation tools.
 
