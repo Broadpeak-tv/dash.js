@@ -22437,13 +22437,16 @@ function DashParser(config) {
   }
   function parse(data, contentType) {
     var manifest;
+    var format = 'XML';
     var startTime = window.performance.now();
     switch (contentType) {
       case 'application/json':
+        format = 'JSON';
         data = String.fromCharCode.apply(null, new Uint8Array(data));
         manifest = parseJson(data);
         break;
       case 'application/octet-stream':
+        format = 'PROTOBUF';
         manifest = parseProto(data);
         break;
       case 'application/dash+xml':
@@ -22476,7 +22479,7 @@ function DashParser(config) {
       objectIron.run(manifest);
     }
     var parsedTime = window.performance.now();
-    logger.info('Parsing complete: ' + (parsedTime - startTime).toPrecision(3) + 'ms');
+    logger.info('[' + format + '] Parsing complete: ' + (parsedTime - startTime).toPrecision(3) + 'ms');
     manifest.protocol = 'DASH';
     return manifest;
   }
