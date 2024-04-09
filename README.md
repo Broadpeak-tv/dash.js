@@ -5,6 +5,86 @@ Build status (CircleCI): [![CircleCI](https://circleci.com/gh/Dash-Industry-Foru
 
 [Join #dashjs on Slack!](https://join.slack.com/t/dashif/shared_invite/zt-egme869x-JH~UPUuLoKJB26fw7wj3Gg)
 
+## !! Manifest format
+
+This version of dash.js implements various manifest formats parsing and processing for testing purpose.
+
+The objective is to test the feasibility and validate advantages in terms of processing time and/or consistency of having alternate representation formats than XML.
+
+With this version, you can load manifest in XML original format but aditionnally in JSON and Protobuf formats.  
+
+### Manifest proxy
+To retrieve manifest in JSON or Protobuf format a manifest proxy has been developed and deployed at this url:
+
+[https://explo.broadpeak.tv/manifest.mpd/]()
+
+In order to retreive transformed manifest you can request it from this proxy by precising the requested format and original manifest url.
+- In JSON format:
+[https://explo.broadpeak.tv/manifest.mpd/json?url=<manifest_url>]()
+- In Protobuf format:
+[https://explo.broadpeak.tv/manifest.mpd/proto?url=<manifest_url>]()
+
+### Manifest parser
+
+The manifest parser in this version has been updated to apply the appropriate parser according to the manifest response content-type:
+- ``application/dash+xml`` => XML
+- ``application/json`` => JSON
+- ``application/octet-stream`` => Protobuf
+
+
+### Reference sample
+
+The reference sample application has been modified to enable using the manifest proxy server.
+
+This reference sample is available at this url:
+[https://broadpeak-tv.github.io/dash.js/samples/dash-if-reference-player/index.html]()
+
+Using this sample application you can load manifests and play streams using the manifest proxy.
+
+The devtools console logs provide the processing time for manifest parsing and processing, for example:
+
+```
+[DashParser] [PROTOBUF] Parsing complete: 0.5ms 
+```
+
+### Protobuf
+
+Protobuf format requires a .proto definition file.
+
+The .proto definition file used by the manifest proxy and this dash.js version is available here: 
+[https://broadpeak-tv.github.io/dash.js/src/dash/parser/dash-mpd.proto]()
+
+This version is not yet complete but covers a large proportion of sample streams manifests.
+
+### Benchmarking
+
+A webapp for benchmarking different manifest formats processing time in on web platforms has been developed based on DASH-IF MPD validator application.
+
+This webapp enables loading either url, file or text, and performs 50 cycles of manifest parsing/decoding for each format (XML, JSON, Protobuf), and displays average processing time.
+
+For XML format, this benchmarking tool is testing 2 different XML parser:
+- The DOM parser and xml2json used by dash.js up to v4
+- The optimized tXml parser used since dash.js v5
+
+Thie webapp is avaialble at this url:
+[https://broadpeak-tv.github.io/DASH-IF-Conformance/ManifestParser-Frontend/index.html]()
+
+
+Here are some examples of numbers (processing time in ms) using this benchmarking tool:
+
+| Manifest (Sample name) | Platform | XML (xml2json) | tXml | JSON  | Protobuf  |
+|---|---|---|---|---|---|
+| VOD (Static MPD) / [DASH-IF] SegmentTemplate/Number, live profile, 250kbps up to 15Mbps@4K  | Desktop Core i5 32GB  | 0.326 | 0.190 | 0.028 | 0.280 |
+| LIVE (Dynamic MPD) / [AWS] Multiperiod - Number + Timeline - Compact manifest - Thumbnails (1 track) - In-the-clear | Desktop Core i5 32GB | 8.330 | 2.490 | 0.208 | 1.060 |
+|   |   |   |   |   |   |
+
+### What's next
+
+The processing time of the different parsers need to be benchmarked also on other platforms such as native platforms, SmartTV (Web and Android), mobile, TV dongles etc.
+
+The question of processing time shall also be considered in the context of manifest generation tools (packagers) and manifest manipulation tools.
+
+
 ## Migration from v3.x to v4.0
 If you are migrating from dash.js v3.x to dash.js v4.x please read the migration document found [here](https://github.com/Dash-Industry-Forum/dash.js/wiki/Migration-to-dash.js-4.0).
 
