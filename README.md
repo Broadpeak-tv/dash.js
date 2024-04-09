@@ -7,7 +7,7 @@ Build status (CircleCI): [![CircleCI](https://circleci.com/gh/Dash-Industry-Foru
 
 ## [NEW] Manifest format
 
-This version of dash.js implements various manifest formats parsing and processing for testing purpose.
+This branch of dash.js implements various manifest formats parsing and processing for testing purpose.
 
 The objective is to test the feasibility and validate advantages in terms of processing time and/or consistency of having alternate representation formats than XML.
 
@@ -26,7 +26,7 @@ In order to retreive transformed manifest you can request it from this proxy by 
 
 ### Manifest parser
 
-The manifest parser in this version has been updated to apply the appropriate parser according to the manifest response content-type:
+The manifest parser in this branch has been updated to apply the appropriate parser according to the manifest response content-type:
 - ``application/dash+xml`` => XML
 - ``application/json`` => JSON
 - ``application/octet-stream`` => Protobuf
@@ -60,13 +60,15 @@ This version is not yet complete but covers a large proportion of sample streams
 
 A webapp for benchmarking different manifest formats processing time in on web platforms has been developed based on DASH-IF MPD validator application.
 
+The code is available on following forked branch of DASH-IF-Conformance project: [https://github.com/Broadpeak-tv/DASH-IF-Conformance/tree/feature/mpd-parser-bench](https://github.com/Broadpeak-tv/DASH-IF-Conformance/tree/feature/mpd-parser-bench)
+
 This webapp enables loading either url, file or text, and performs 50 cycles of manifest parsing/decoding for each format (XML, JSON, Protobuf), and displays average processing time.
 
 For XML format, this benchmarking tool is testing 2 different XML parsers:
 - The DOM parser and ``xml2json`` used by dash.js up to v4
 - The optimized ``tXml`` parser used since dash.js v5
 
-Thie webapp is avaialble at this url:
+This webapp is available at this url:
 [https://broadpeak-tv.github.io/DASH-IF-Conformance/ManifestParser-Frontend/index.html](https://broadpeak-tv.github.io/DASH-IF-Conformance/ManifestParser-Frontend/index.html)
 
 
