@@ -5,7 +5,7 @@ Build status (CircleCI): [![CircleCI](https://circleci.com/gh/Dash-Industry-Foru
 
 [Join #dashjs on Slack!](https://join.slack.com/t/dashif/shared_invite/zt-egme869x-JH~UPUuLoKJB26fw7wj3Gg)
 
-## !! Manifest format
+## [NEW] Manifest format
 
 This version of dash.js implements various manifest formats parsing and processing for testing purpose.
 
