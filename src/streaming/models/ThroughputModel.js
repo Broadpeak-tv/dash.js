@@ -140,15 +140,17 @@ function ThroughputModel(config) {
      */
     function _calculateThroughputValues(httpRequest, latencyInMs) {
 
-        // Low latency is enabled, we used the fetch API and received chunks
-        if (httpRequest._fileLoaderType && httpRequest._fileLoaderType === Constants.FILE_LOADER_TYPES.FETCH) {
-            return _calculateThroughputValuesForFetch(httpRequest);
-        }
+        return _calculateThroughputValuesForFetch(httpRequest);
 
-        // Standard case, we used standard XHR requests
-        else {
-            return _calculateThroughputValuesForXhr(httpRequest, latencyInMs);
-        }
+        // Low latency is enabled, we used the fetch API and received chunks
+        // if (httpRequest._fileLoaderType && httpRequest._fileLoaderType === Constants.FILE_LOADER_TYPES.FETCH) {
+        //     return _calculateThroughputValuesForFetch(httpRequest);
+        // }
+
+        // // Standard case, we used standard XHR requests
+        // else {
+        //     return _calculateThroughputValuesForXhr(httpRequest, latencyInMs);
+        // }
     }
 
     /**

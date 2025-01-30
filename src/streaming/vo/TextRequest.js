@@ -41,7 +41,7 @@ class TextRequest extends FragmentRequest {
         this.url = url || null;
         this.type = type || null;
         this.mediaType = Constants.STREAM;
-        this.responseType = ''; //'text' value returns a bad encoding response in Firefox
+        this.responseType = 'text'; //'text' value returns a bad encoding response in Firefox
     }
 }
 
