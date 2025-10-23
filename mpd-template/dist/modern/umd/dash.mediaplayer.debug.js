@@ -38047,7 +38047,7 @@ function DashAdapter() {
   }
   function convertMpdToManifestInfo(mpd) {
     let manifestInfo = new _vo_ManifestInfo_js__WEBPACK_IMPORTED_MODULE_3__["default"]();
-    manifestInfo.dvrWindowSize = mpd.timeShiftBufferDepthExt || mpd.timeShiftBufferDepth;
+    manifestInfo.dvrWindowSize = mpd.extTimeShiftBufferDepth || mpd.timeShiftBufferDepth;
     manifestInfo.currentWindowSize = mpd.timeShiftBufferDepth;
     manifestInfo.loadedTime = mpd.manifest.loadedTime;
     manifestInfo.availableFrom = mpd.availabilityStartTime;
@@ -39839,6 +39839,8 @@ __webpack_require__.r(__webpack_exports__);
   ESSENTIAL_PROPERTY: 'EssentialProperty',
   EVENT: 'Event',
   EVENT_STREAM: 'EventStream',
+  EXT_DYNAMIC: 'extDynamic',
+  EXT_TIMESHIFT_BUFFER_DEPTH: 'extTimeShiftBufferDepth',
   FORCED_SUBTITLE: 'forced-subtitle',
   FRAMERATE: 'frameRate',
   FRAME_PACKING: 'FramePacking',
@@ -39945,7 +39947,6 @@ __webpack_require__.r(__webpack_exports__);
   TAG: 'tag',
   TIMESCALE: 'timescale',
   TIMESHIFT_BUFFER_DEPTH: 'timeShiftBufferDepth',
-  TIMESHIFT_BUFFER_DEPTH_EXT: 'timeShiftBufferDepthExt',
   TTL: 'ttl',
   TYPE: 'type',
   UTC_TIMING: 'UTCTiming',
@@ -41908,7 +41909,7 @@ function DashManifestModel() {
   function getIsDynamic(manifest) {
     let isDynamic = false;
     if (manifest && manifest.hasOwnProperty('type')) {
-      isDynamic = manifest.type === _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_7__["default"].DYNAMIC;
+      isDynamic = manifest.type === _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_7__["default"].DYNAMIC || manifest.type === _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_7__["default"].EXT_DYNAMIC;
     }
     return isDynamic;
   }
@@ -42424,8 +42425,8 @@ function DashManifestModel() {
       if (manifest.hasOwnProperty(_constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_7__["default"].TIMESHIFT_BUFFER_DEPTH)) {
         mpd.timeShiftBufferDepth = manifest.timeShiftBufferDepth;
       }
-      if (manifest.hasOwnProperty(_constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_7__["default"].TIMESHIFT_BUFFER_DEPTH_EXT)) {
-        mpd.timeShiftBufferDepthExt = manifest.timeShiftBufferDepthExt;
+      if (manifest.hasOwnProperty(_constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_7__["default"].EXT_TIMESHIFT_BUFFER_DEPTH)) {
+        mpd.extTimeShiftBufferDepth = manifest.extTimeShiftBufferDepth;
       }
       if (manifest.hasOwnProperty(_constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_7__["default"].MAX_SEGMENT_DURATION)) {
         mpd.maxSegmentDuration = manifest.maxSegmentDuration;
@@ -43658,7 +43659,7 @@ const SECONDS_IN_MIN = 60;
 class DurationMatcher extends _BaseMatcher_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super((tagName, attrName, value) => {
-      const attributeList = [_constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_2__["default"].MIN_BUFFER_TIME, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_2__["default"].MEDIA_PRESENTATION_DURATION, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_2__["default"].MINIMUM_UPDATE_PERIOD, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_2__["default"].TIMESHIFT_BUFFER_DEPTH, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_2__["default"].TIMESHIFT_BUFFER_DEPTH_EXT, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_2__["default"].MAX_SEGMENT_DURATION, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_2__["default"].MAX_SUBSEGMENT_DURATION, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_2__["default"].SUGGESTED_PRESENTATION_DELAY, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_2__["default"].START, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_2__["default"].MPD_PERIOD, _streaming_constants_Constants_js__WEBPACK_IMPORTED_MODULE_1__["default"].START_TIME, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_2__["default"].DURATION];
+      const attributeList = [_constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_2__["default"].MIN_BUFFER_TIME, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_2__["default"].MEDIA_PRESENTATION_DURATION, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_2__["default"].MINIMUM_UPDATE_PERIOD, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_2__["default"].TIMESHIFT_BUFFER_DEPTH, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_2__["default"].EXT_TIMESHIFT_BUFFER_DEPTH, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_2__["default"].MAX_SEGMENT_DURATION, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_2__["default"].MAX_SUBSEGMENT_DURATION, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_2__["default"].SUGGESTED_PRESENTATION_DELAY, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_2__["default"].START, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_2__["default"].MPD_PERIOD, _streaming_constants_Constants_js__WEBPACK_IMPORTED_MODULE_1__["default"].START_TIME, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_2__["default"].DURATION];
       const len = attributeList.length;
       for (let i = 0; i < len; i++) {
         if (attrName === attributeList[i]) {
@@ -44613,7 +44614,7 @@ function TimelineConverter() {
     let availabilityTime;
     let mpd = representation.adaptation.period.mpd;
     const availabilityStartTime = mpd.availabilityStartTime;
-    const timeShiftBufferDepth = mpd.timeShiftBufferDepthExt || mpd.timeShiftBufferDepth;
+    const timeShiftBufferDepth = mpd.extTimeShiftBufferDepth || mpd.timeShiftBufferDepth;
     if (calculateAvailabilityEndTime) {
       //@timeShiftBufferDepth specifies the duration of the time shifting buffer that is guaranteed
       // to be available for a Media Presentation with type 'dynamic'.
@@ -44719,11 +44720,11 @@ function TimelineConverter() {
     }
     const voPeriod = streams[0].getAdapter().getRegularPeriods()[0];
     const now = calcPresentationTimeFromWallTime(new Date(), voPeriod);
-    const timeShiftBufferDepth = useCurrentTimeShiftBufferDepth ? voPeriod.mpd.timeShiftBufferDepth : voPeriod.mpd.timeShiftBufferDepthExt || voPeriod.mpd.timeShiftBufferDepth;
+    const timeShiftBufferDepth = useCurrentTimeShiftBufferDepth ? voPeriod.mpd.timeShiftBufferDepth : voPeriod.mpd.extTimeShiftBufferDepth || voPeriod.mpd.timeShiftBufferDepth;
     range.start = !isNaN(timeShiftBufferDepth) ? now - timeShiftBufferDepth : 0;
     range.end = now;
     // check if we find a suitable period for that starttime. Otherwise, we use the time closest to that
-    if (isNaN(voPeriod.mpd.timeShiftBufferDepthExt)) {
+    if (isNaN(voPeriod.mpd.extTimeShiftBufferDepth)) {
       range.start = _adjustTimeBasedOnPeriodRanges(streams, range.start);
       range.end = !isNaN(range.start) && now < range.start ? now : _adjustTimeBasedOnPeriodRanges(streams, now, true);
     }
@@ -44733,7 +44734,7 @@ function TimelineConverter() {
 
     // If we have SegmentTimeline as a reference we can verify that the calculated DVR window is at least partially included in the DVR window exposed by the timeline.
     // If that is not the case we stick to the DVR window defined by SegmentTimeline
-    if (settings.get().streaming.timeShiftBuffer.fallbackToSegmentTimeline && isNaN(voPeriod.mpd.timeShiftBufferDepthExt)) {
+    if (settings.get().streaming.timeShiftBuffer.fallbackToSegmentTimeline && isNaN(voPeriod.mpd.extTimeShiftBufferDepth)) {
       const timelineRefData = _calcTimeShiftBufferWindowForDynamicTimelineManifest(streams);
       if (timelineRefData.range.end < range.start) {
         eventBus.trigger(_streaming_MediaPlayerEvents_js__WEBPACK_IMPORTED_MODULE_7__["default"].CONFORMANCE_VIOLATION, {
@@ -82304,7 +82305,7 @@ class DVRInfo {
     this.range = null;
     /**
      * The current Segment Availability Range as an object with start and end properties.
-     * It's delta defined by the timeShiftBufferDepthExt MPD attribute.
+     * It's delta defined by the extTimeShiftBufferDepth MPD attribute.
      * @public
      */
     this.currentRange = null;

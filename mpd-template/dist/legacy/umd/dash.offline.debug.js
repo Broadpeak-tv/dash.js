@@ -46990,6 +46990,8 @@ __webpack_require__.r(__webpack_exports__);
   ESSENTIAL_PROPERTY: 'EssentialProperty',
   EVENT: 'Event',
   EVENT_STREAM: 'EventStream',
+  EXT_DYNAMIC: 'extDynamic',
+  EXT_TIMESHIFT_BUFFER_DEPTH: 'extTimeShiftBufferDepth',
   FORCED_SUBTITLE: 'forced-subtitle',
   FRAMERATE: 'frameRate',
   FRAME_PACKING: 'FramePacking',
@@ -47096,7 +47098,6 @@ __webpack_require__.r(__webpack_exports__);
   TAG: 'tag',
   TIMESCALE: 'timescale',
   TIMESHIFT_BUFFER_DEPTH: 'timeShiftBufferDepth',
-  TIMESHIFT_BUFFER_DEPTH_EXT: 'timeShiftBufferDepthExt',
   TTL: 'ttl',
   TYPE: 'type',
   UTC_TIMING: 'UTCTiming',
@@ -48085,7 +48086,7 @@ function DashManifestModel() {
   function getIsDynamic(manifest) {
     var isDynamic = false;
     if (manifest && manifest.hasOwnProperty('type')) {
-      isDynamic = manifest.type === _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_43__["default"].DYNAMIC;
+      isDynamic = manifest.type === _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_43__["default"].DYNAMIC || manifest.type === _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_43__["default"].EXT_DYNAMIC;
     }
     return isDynamic;
   }
@@ -48614,8 +48615,8 @@ function DashManifestModel() {
       if (manifest.hasOwnProperty(_constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_43__["default"].TIMESHIFT_BUFFER_DEPTH)) {
         mpd.timeShiftBufferDepth = manifest.timeShiftBufferDepth;
       }
-      if (manifest.hasOwnProperty(_constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_43__["default"].TIMESHIFT_BUFFER_DEPTH_EXT)) {
-        mpd.timeShiftBufferDepthExt = manifest.timeShiftBufferDepthExt;
+      if (manifest.hasOwnProperty(_constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_43__["default"].EXT_TIMESHIFT_BUFFER_DEPTH)) {
+        mpd.extTimeShiftBufferDepth = manifest.extTimeShiftBufferDepth;
       }
       if (manifest.hasOwnProperty(_constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_43__["default"].MAX_SEGMENT_DURATION)) {
         mpd.maxSegmentDuration = manifest.maxSegmentDuration;
@@ -49856,7 +49857,7 @@ var DurationMatcher = /*#__PURE__*/function (_BaseMatcher) {
   function DurationMatcher() {
     (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_2__["default"])(this, DurationMatcher);
     return _callSuper(this, DurationMatcher, [function (tagName, attrName, value) {
-      var attributeList = [_constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_10__["default"].MIN_BUFFER_TIME, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_10__["default"].MEDIA_PRESENTATION_DURATION, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_10__["default"].MINIMUM_UPDATE_PERIOD, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_10__["default"].TIMESHIFT_BUFFER_DEPTH, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_10__["default"].TIMESHIFT_BUFFER_DEPTH_EXT, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_10__["default"].MAX_SEGMENT_DURATION, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_10__["default"].MAX_SUBSEGMENT_DURATION, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_10__["default"].SUGGESTED_PRESENTATION_DELAY, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_10__["default"].START, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_10__["default"].MPD_PERIOD, _streaming_constants_Constants_js__WEBPACK_IMPORTED_MODULE_9__["default"].START_TIME, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_10__["default"].DURATION];
+      var attributeList = [_constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_10__["default"].MIN_BUFFER_TIME, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_10__["default"].MEDIA_PRESENTATION_DURATION, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_10__["default"].MINIMUM_UPDATE_PERIOD, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_10__["default"].TIMESHIFT_BUFFER_DEPTH, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_10__["default"].EXT_TIMESHIFT_BUFFER_DEPTH, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_10__["default"].MAX_SEGMENT_DURATION, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_10__["default"].MAX_SUBSEGMENT_DURATION, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_10__["default"].SUGGESTED_PRESENTATION_DELAY, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_10__["default"].START, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_10__["default"].MPD_PERIOD, _streaming_constants_Constants_js__WEBPACK_IMPORTED_MODULE_9__["default"].START_TIME, _constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_10__["default"].DURATION];
       var len = attributeList.length;
       for (var i = 0; i < len; i++) {
         if (attrName === attributeList[i]) {
