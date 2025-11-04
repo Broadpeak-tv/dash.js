@@ -664,6 +664,17 @@ function DashAdapter() {
     }
 
     /**
+     * Returns the location template element of the MPD
+     * @param {object} manifest
+     * @returns {String} template
+     * @memberOf module:DashAdapter
+     * @instance
+     */
+    function getLocationTemplate(manifest) {
+        return dashManifestModel.getLocationTemplate(manifest);
+    }
+
+    /**
      * Returns the manifest update period used for dynamic manifests
      * @param {object} manifest
      * @param {number} latencyOfLastUpdate
@@ -1246,7 +1257,8 @@ function DashAdapter() {
     function convertMpdToManifestInfo(mpd) {
         let manifestInfo = new ManifestInfo();
 
-        manifestInfo.dvrWindowSize = mpd.timeShiftBufferDepth;
+        manifestInfo.dvrWindowSize = mpd.extTimeShiftBufferDepth || mpd.timeShiftBufferDepth;
+        manifestInfo.currentWindowSize = mpd.timeShiftBufferDepth;
         manifestInfo.loadedTime = mpd.manifest.loadedTime;
         manifestInfo.availableFrom = mpd.availabilityStartTime;
         manifestInfo.minBufferTime = mpd.manifest.minBufferTime;
@@ -1328,6 +1340,7 @@ function DashAdapter() {
         getIsTextTrack,
         getIsTypeOf,
         getLocation,
+        getLocationTemplate,
         getMainAdaptationForType,
         getMainAdaptationSetForPreselection,
         getCommonRepresentationForPreselection,

@@ -40,6 +40,7 @@ import LocationSelector from './utils/LocationSelector.js';
 import MediaPlayerEvents from '../streaming/MediaPlayerEvents.js';
 import URLUtils from './utils/URLUtils.js';
 import Utils from '../core/Utils.js';
+import {processUriTemplate} from '../dash/utils/SegmentsUtils.js';
 
 function ManifestUpdater() {
 
@@ -55,12 +56,15 @@ function ManifestUpdater() {
         isPaused,
         isStopped,
         isUpdating,
+        isSeeking,
         locationSelector,
         logger,
         manifestLoader,
         manifestModel,
+        playbackController,
         refreshDelay,
         refreshTimer,
+        lastMpdNumber,
         settings;
 
 
@@ -84,6 +88,9 @@ function ManifestUpdater() {
         if (config.manifestLoader) {
             manifestLoader = config.manifestLoader;
         }
+        if (config.playbackController) {
+            playbackController = config.playbackController;
+        }
         if (config.errHandler) {
             errHandler = config.errHandler;
         }
@@ -104,9 +111,9 @@ function ManifestUpdater() {
     function initialize() {
         resetInitialSettings();
 
-        eventBus.on(Events.STREAMS_COMPOSED, _onStreamsComposed, this);
         eventBus.on(MediaPlayerEvents.PLAYBACK_STARTED, _onPlaybackStarted, this);
         eventBus.on(MediaPlayerEvents.PLAYBACK_PAUSED, _onPlaybackPaused, this);
+        eventBus.on(Events.STREAMS_COMPOSED, _onStreamsComposed, this);
         eventBus.on(Events.INTERNAL_MANIFEST_LOADED, _onManifestLoaded, this);
     }
 
@@ -117,8 +124,10 @@ function ManifestUpdater() {
     function resetInitialSettings() {
         refreshDelay = NaN;
         isUpdating = false;
+        isSeeking = false;
         isPaused = true;
         isStopped = false;
+        lastMpdNumber = NaN;
         _stopManifestRefreshTimer();
     }
 
@@ -156,9 +165,11 @@ function ManifestUpdater() {
         }
     }
 
-    function refreshManifest(ignorePatch = false) {
+    function refreshManifest(ignorePatch = false, publishTime = null) {
+
         isUpdating = true;
         const manifest = manifestModel.getValue();
+        let targetPublishTime = publishTime;
 
         // default to the original url in the manifest
         let url = manifest.url;
@@ -187,12 +198,62 @@ function ManifestUpdater() {
             }
         }
 
+        // Get/update manifest anterior to live edge using LocationTemplate
+        if (!targetPublishTime && !isNaN(lastMpdNumber)) {
+            const currentTime = adapter.getAvailabilityStartTime() + playbackController.getTime();
+            targetPublishTime = currentTime + playbackController.getOriginalLiveDelay();
+        }
+
+        if (targetPublishTime) {
+            const locationTemplate = adapter.getLocationTemplate(manifest);
+            if (locationTemplate) {
+                const mpdNumber = getMpTemplateNumber(locationTemplate, targetPublishTime);
+                logger.debug('Refresh manifest, publishTime=', targetPublishTime, ' => number=', mpdNumber);
+                if (mpdNumber === lastMpdNumber) {
+                    isUpdating = false;
+                    startManifestRefreshTimer();
+                    return;
+                }
+                url = processUriTemplate(locationTemplate.mpd, null, mpdNumber);
+                lastMpdNumber = mpdNumber;
+            }
+        }
+
         // if one of the alternatives was relative, convert to absolute
         if (urlUtils.isRelative(url)) {
             url = urlUtils.resolve(url, manifest.url);
         }
 
-        manifestLoader.load(url, serviceLocation, queryParams);
+        manifestLoader.load(url, serviceLocation, queryParams, manifest.url);
+    }
+
+    function seekManifest(publishTime) {
+        if (isSeeking) {
+            return;
+        }
+        logger.debug('Seek manifest @' + (publishTime || 'live'));
+        const manifest = manifestModel.getValue();
+        if (!adapter.getIsDynamic(manifest)) {
+            return;
+        }
+        const locationTemplate = adapter.getLocationTemplate(manifest);
+        if (!locationTemplate) {
+            return
+        }
+        
+        isSeeking = true;
+
+        lastMpdNumber = NaN;
+
+        _stopManifestRefreshTimer();
+        refreshManifest(true, publishTime);
+    }
+
+    function getMpTemplateNumber(locationTemplate, publishTime) {
+        const manifest = manifestModel.getValue();
+        const availabilityStartTime = adapter.getAvailabilityStartTime(manifest);
+        const number = Math.floor((publishTime - availabilityStartTime) / locationTemplate.period + locationTemplate.startNumber);
+        return number;
     }
 
     function _getAvailableMpdLocations(manifest) {
@@ -342,6 +403,7 @@ function ManifestUpdater() {
     function _onStreamsComposed(/*e*/) {
         // When streams are ready we can consider manifest update completed. Resolve the update promise.
         isUpdating = false;
+        isSeeking = false;
     }
 
     function getIsUpdating() {
@@ -353,6 +415,7 @@ function ManifestUpdater() {
         initialize,
         refreshManifest,
         reset,
+        seekManifest,
         setConfig,
         setManifest
     };

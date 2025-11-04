@@ -107,7 +107,7 @@ function ManifestLoader(config) {
         }
     }
 
-    function load(url, serviceLocation = null, queryParams = null) {
+    function load(url, serviceLocation = null, queryParams = null, originalUrl = null) {
 
         const requestStartDate = new Date();
         const request = new TextRequest(url, HTTPRequest.MPD_TYPE);
@@ -201,7 +201,7 @@ function ManifestLoader(config) {
                 }
 
                 if (manifest) {
-                    manifest.url = actualUrl || url;
+                    manifest.url = actualUrl || originalUrl || url;
 
                     // URL from which the MPD was originally retrieved (MPD updates will not change this value)
                     if (!manifest.originalUrl) {

@@ -79,14 +79,15 @@ function TimelineConverter() {
         let availabilityTime;
         let mpd = representation.adaptation.period.mpd;
         const availabilityStartTime = mpd.availabilityStartTime;
+        const timeShiftBufferDepth = mpd.extTimeShiftBufferDepth || mpd.timeShiftBufferDepth;
 
         if (calculateAvailabilityEndTime) {
             //@timeShiftBufferDepth specifies the duration of the time shifting buffer that is guaranteed
             // to be available for a Media Presentation with type 'dynamic'.
             // When not present, the value is infinite.
-            if (isDynamic && mpd.timeShiftBufferDepth !== Number.POSITIVE_INFINITY) {
+            if (isDynamic && timeShiftBufferDepth !== Number.POSITIVE_INFINITY) {
                 // SAET = SAST + TSBD + seg@duration
-                availabilityTime = new Date(availabilityStartTime.getTime() + ((presentationEndTime + mpd.timeShiftBufferDepth) * 1000));
+                availabilityTime = new Date(availabilityStartTime.getTime() + ((presentationEndTime + timeShiftBufferDepth) * 1000));
             } else {
                 availabilityTime = mpd.availabilityEndTime;
             }
@@ -152,21 +153,23 @@ function TimelineConverter() {
      * @param {boolean} isDynamic
      * @return {}
      */
-    function calcTimeShiftBufferWindow(streams, isDynamic) {
+    function calcTimeShiftBufferWindow(streams, isDynamic, useCurrentTimeShiftBufferDepth = false) {
         // Static manifests. The availability window is equal to the DVR window
         if (!isDynamic) {
             return _calcTimeshiftBufferForStaticManifest(streams);
         }
 
         // Specific use case of SegmentTimeline
-        if (settings.get().streaming.timeShiftBuffer.calcFromSegmentTimeline) {
-            const data = _calcTimeShiftBufferWindowForDynamicTimelineManifest(streams);
-            _adjustTimelineAnchorAvailabilityOffset(data.now, data.range);
+        if (settings.get().streaming.timeShiftBuffer.calcFromSegmentTimeline || useCurrentTimeShiftBufferDepth) {
+            const data = _calcTimeShiftBufferWindowForDynamicTimelineManifest(streams, useCurrentTimeShiftBufferDepth);
+            if (useCurrentTimeShiftBufferDepth) {
+                _adjustTimelineAnchorAvailabilityOffset(data.now, data.range);
+            }
 
             return data.range;
         }
 
-        return _calcTimeShiftBufferWindowForDynamicManifest(streams);
+        return _calcTimeShiftBufferWindowForDynamicManifest(streams, useCurrentTimeShiftBufferDepth);
     }
 
     function _calcTimeshiftBufferForStaticManifest(streams) {
@@ -189,7 +192,7 @@ function TimelineConverter() {
         return range;
     }
 
-    function _calcTimeShiftBufferWindowForDynamicManifest(streams) {
+    function _calcTimeShiftBufferWindowForDynamicManifest(streams, useCurrentTimeShiftBufferDepth) {
         const range = { start: NaN, end: NaN };
 
         if (!streams || streams.length === 0) {
@@ -198,11 +201,14 @@ function TimelineConverter() {
 
         const voPeriod = streams[0].getAdapter().getRegularPeriods()[0];
         const now = calcPresentationTimeFromWallTime(new Date(), voPeriod);
-        const timeShiftBufferDepth = voPeriod.mpd.timeShiftBufferDepth;
-        const start = !isNaN(timeShiftBufferDepth) ? now - timeShiftBufferDepth : 0;
+        const timeShiftBufferDepth = useCurrentTimeShiftBufferDepth ? voPeriod.mpd.timeShiftBufferDepth : voPeriod.mpd.extTimeShiftBufferDepth || voPeriod.mpd.timeShiftBufferDepth;
+        range.start = !isNaN(timeShiftBufferDepth) ? now - timeShiftBufferDepth : 0;
+        range.end = now;
         // check if we find a suitable period for that starttime. Otherwise, we use the time closest to that
-        range.start = _adjustTimeBasedOnPeriodRanges(streams, start);
-        range.end = !isNaN(range.start) && now < range.start ? now : _adjustTimeBasedOnPeriodRanges(streams, now, true);
+        if (isNaN(voPeriod.mpd.extTimeShiftBufferDepth)) {
+            range.start = _adjustTimeBasedOnPeriodRanges(streams, range.start);
+            range.end = !isNaN(range.start) && now < range.start ? now : _adjustTimeBasedOnPeriodRanges(streams, now, true);
+        }
 
         if (!isNaN(timeShiftBufferDepth) && range.end < now - timeShiftBufferDepth) {
             range.end = NaN;
@@ -210,7 +216,7 @@ function TimelineConverter() {
 
         // If we have SegmentTimeline as a reference we can verify that the calculated DVR window is at least partially included in the DVR window exposed by the timeline.
         // If that is not the case we stick to the DVR window defined by SegmentTimeline
-        if (settings.get().streaming.timeShiftBuffer.fallbackToSegmentTimeline) {
+        if (settings.get().streaming.timeShiftBuffer.fallbackToSegmentTimeline && isNaN(voPeriod.mpd.extTimeShiftBufferDepth)) {
             const timelineRefData = _calcTimeShiftBufferWindowForDynamicTimelineManifest(streams);
             if (timelineRefData.range.end < range.start) {
                 eventBus.trigger(MediaPlayerEvents.CONFORMANCE_VIOLATION, {
@@ -225,7 +231,7 @@ function TimelineConverter() {
         return range;
     }
 
-    function _calcTimeShiftBufferWindowForDynamicTimelineManifest(streams) {
+    function _calcTimeShiftBufferWindowForDynamicTimelineManifest(streams, useCurrentTimeShiftBufferDepth) {
         const range = { start: NaN, end: NaN };
         const voPeriod = streams[0].getAdapter().getRegularPeriods()[0];
         const now = calcPresentationTimeFromWallTime(new Date(), voPeriod);
@@ -275,8 +281,11 @@ function TimelineConverter() {
         // if range is NaN all periods are in the future. we should return range.start > range.end in this case
         range.end = isNaN(adjustedEndTime) ? range.end : adjustedEndTime;
 
-        range.start = voPeriod && voPeriod.mpd && voPeriod.mpd.timeShiftBufferDepth && !isNaN(voPeriod.mpd.timeShiftBufferDepth) && !isNaN(range.end) ? Math.max(range.end - voPeriod.mpd.timeShiftBufferDepth, range.start) : range.start;
-        range.start = _adjustTimeBasedOnPeriodRanges(streams, range.start);
+        if (!useCurrentTimeShiftBufferDepth) {
+            range.start = voPeriod && voPeriod.mpd && voPeriod.mpd.timeShiftBufferDepth && !isNaN(voPeriod.mpd.timeShiftBufferDepth) && !isNaN(range.end) ? Math.max(range.end - voPeriod.mpd.timeShiftBufferDepth, range.start) : range.start;
+            // Adjust on period only if not calculated upon current timeShiftBufferDepth
+            range.start = _adjustTimeBasedOnPeriodRanges(streams, range.start);
+        }
 
         return { range, now };
     }

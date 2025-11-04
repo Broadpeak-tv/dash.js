@@ -246,10 +246,11 @@ function MetricsModel(config) {
         pushAndNotify(mediaType, MetricsConstants.BUFFER_STATE, vo);
     }
 
-    function addDVRInfo(mediaType, currentTime, mpd, range) {
+    function addDVRInfo(mediaType, currentTime, mpd, range, currentRange) {
         let vo = new DVRInfo();
         vo.time = currentTime;
         vo.range = range;
+        vo.currentRange = currentRange;
         vo.manifestInfo = mpd;
 
         pushAndNotify(mediaType, MetricsConstants.DVR_INFO, vo);

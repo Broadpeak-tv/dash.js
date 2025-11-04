@@ -487,9 +487,9 @@ function PlaybackController() {
             availabilityStartTime = startTime;
         }
 
-        if (manifestInfo && manifestInfo.dvrWindowSize > 0) {
+        if (manifestInfo && manifestInfo.currentWindowSize > 0) {
             // Latency can not be higher than DVR window size
-            ret = Math.min(delay, manifestInfo.dvrWindowSize);
+            ret = Math.min(delay, manifestInfo.currentWindowSize);
         } else {
             ret = delay;
         }

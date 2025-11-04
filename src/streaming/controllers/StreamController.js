@@ -65,7 +65,7 @@ function StreamController() {
         autoPlay, isStreamSwitchingInProgress, hasMediaError, hasInitialisationError, mediaSource, videoModel,
         playbackController, serviceDescriptionController, mediaPlayerModel, customParametersModel, isPaused,
         initialPlayback, initialSteeringRequest, playbackEndedTimerInterval, preloadingStreams, settings,
-        firstLicenseIsFetched, waitForPlaybackStartTimeout, providedStartTime, errorInformation;
+        firstLicenseIsFetched, waitForPlaybackStartTimeout, providedStartTime, seekingTime, errorInformation;
 
     function setup() {
         logger = Debug(context).getInstance().getLogger(instance);
@@ -87,7 +87,9 @@ function StreamController() {
         manifestUpdater.setConfig({
             manifestModel,
             adapter,
+            dashMetrics,
             manifestLoader,
+            playbackController,
             errHandler,
             settings,
             contentSteeringController
@@ -134,7 +136,6 @@ function StreamController() {
         eventBus.on(MediaPlayerEvents.BUFFER_LEVEL_UPDATED, _onBufferLevelUpdated, instance);
         eventBus.on(MediaPlayerEvents.QUALITY_CHANGE_REQUESTED, _onQualityChanged, instance);
         eventBus.on(MediaPlayerEvents.CONTENT_STEERING_REQUEST_COMPLETED, _onSteeringManifestUpdated, instance);
-
 
         if (Events.KEY_SESSION_UPDATED) {
             eventBus.on(Events.KEY_SESSION_UPDATED, _onKeySessionUpdated, instance);
@@ -266,6 +267,15 @@ function StreamController() {
                         if (!activeStream) {
                             _initializeForFirstStream(streamsInfo, resolve, reject);
                         } else {
+                            if (seekingTime) {
+                                // Once seeked manifest outside previous live window, check if stream/period is different
+                                const newStream = getStreamForTime(seekingTime);
+                                if (newStream.getId() !== activeStream.getId()) {
+                                    addDVRMetric();
+                                    _switchStream(newStream, activeStream, seekingTime);
+                                    seekingTime = null;
+                                }
+                            }
                             resolve();
                         }
                     });
@@ -321,6 +331,7 @@ function StreamController() {
                 settings
             });
             streams.push(stream);
+            streams.sort((s1, s2) => s1.getStartTime() - s2.getStartTime())
             stream.initialize();
             return Promise.resolve();
         } else {
@@ -580,8 +591,28 @@ function StreamController() {
      */
     function _onPlaybackSeeking(e) {
         const newTime = e.seekTime;
-        const seekToStream = getStreamForTime(newTime);
 
+        // Check if seeking outside current live window
+        const isDynamic = adapter.getIsDynamic();
+        const dvrInfo = dashMetrics.getCurrentDVRInfo();
+        if (isDynamic && dvrInfo.currentRange) {
+            if (newTime < dvrInfo.currentRange.start || newTime > dvrInfo.currentRange.end) {
+                // Seek to manifest generated at seeking time + liveDelay
+                seekingTime = newTime;
+                if (newTime >= (dvrInfo.range.end - playbackController.getOriginalLiveDelay())) {
+                    manifestUpdater.seekManifest();
+                } else {
+                    const manifest = manifestModel.getValue();
+                    const availabilityStartTime = adapter.getAvailabilityStartTime(manifest);
+                    const utcSeekTime = availabilityStartTime + newTime;
+                    const liveDelay = playbackController.getOriginalLiveDelay();
+                    const publishTime = utcSeekTime + liveDelay;
+                    manifestUpdater.seekManifest(publishTime);
+                }
+            }
+        }
+        
+        const seekToStream = getStreamForTime(newTime);
         if (!seekToStream || seekToStream === activeStream) {
             _cancelPreloading();
             _handleInnerPeriodSeek(e);
@@ -769,6 +800,7 @@ function StreamController() {
             const manifestInfo = streamsInfo[0].manifestInfo;
             const time = playbackController.getTime();
             const range = timelineConverter.calcTimeShiftBufferWindow(streams, isDynamic);
+            const currentRange = timelineConverter.calcTimeShiftBufferWindow(streams, isDynamic, true);
             const activeStreamProcessors = getActiveStreamProcessors();
 
             if (typeof range.start === 'undefined' || typeof range.end === 'undefined') {
@@ -776,10 +808,10 @@ function StreamController() {
             }
 
             if (!activeStreamProcessors || activeStreamProcessors.length === 0) {
-                dashMetrics.addDVRInfo(Constants.VIDEO, time, manifestInfo, range);
+                dashMetrics.addDVRInfo(Constants.VIDEO, time, manifestInfo, range, currentRange);
             } else {
                 activeStreamProcessors.forEach((sp) => {
-                    dashMetrics.addDVRInfo(sp.getType(), time, manifestInfo, range);
+                    dashMetrics.addDVRInfo(sp.getType(), time, manifestInfo, range, currentRange);
                 });
             }
         } catch (e) {
@@ -1146,8 +1178,13 @@ function StreamController() {
             // If start time in URI, take min value between live edge time and time from URI (capped by DVR window range)
             const dvrWindow = dvrInfo ? dvrInfo.range : null;
             if (dvrWindow) {
+                // If a seek has been performed outside previous live window, then seek to target time
+                const currentTime = playbackController.getTime();
+                if (currentTime) {
+                    startTime = currentTime;
+                }
                 // If start time was provided by the application as part of the call to initialize() or attachSource() use this value
-                if (!isNaN(providedStartTime) || providedStartTime.toString().indexOf('posix:') !== -1) {
+                else if (!isNaN(providedStartTime) || providedStartTime.toString().indexOf('posix:') !== -1) {
                     logger.info(`Start time provided by the app: ${providedStartTime}`);
                     const providedStartTimeAsPresentationTime = _getStartTimeFromProvidedData(true, providedStartTime)
                     if (!isNaN(providedStartTimeAsPresentationTime)) {
@@ -1259,7 +1296,7 @@ function StreamController() {
                 return sInfo.id === stream.getId();
             }).length > 0;
 
-            const shouldKeepStream = isStillIncluded || stream.getId() === activeStream.getId();
+            const shouldKeepStream = isStillIncluded || (!seekingTime && stream.getId() === activeStream.getId());
 
             if (!shouldKeepStream) {
                 logger.debug(`Removing stream ${stream.getId()}`);
@@ -1650,6 +1687,7 @@ function StreamController() {
         firstLicenseIsFetched = false;
         preloadingStreams = [];
         waitForPlaybackStartTimeout = null;
+        seekingTime = null;
         errorInformation = {
             counts: {
                 mediaErrorDecode: 0

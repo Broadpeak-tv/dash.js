@@ -381,12 +381,13 @@ function DashMetrics(config) {
      * @param {Date} currentTime time of the switch event
      * @param {object} mpd mpd reference
      * @param {object} range range of the dvr info
+     * @param {object} currentRange range of the current manifest window
      * @memberof module:DashMetrics
      * @instance
      * @ignore
      */
-    function addDVRInfo(mediaType, currentTime, mpd, range) {
-        metricsModel.addDVRInfo(mediaType, currentTime, mpd, range);
+    function addDVRInfo(mediaType, currentTime, mpd, range, currentRange) {
+        metricsModel.addDVRInfo(mediaType, currentTime, mpd, range, currentRange);
     }
 
     /**

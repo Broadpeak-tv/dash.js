@@ -45,6 +45,7 @@ import EventStream from '../vo/EventStream.js';
 import FactoryMaker from '../../core/FactoryMaker.js';
 import Mpd from '../vo/Mpd.js';
 import MpdLocation from '../vo/MpdLocation.js';
+import MpdLocationTemplate from '../vo/MpdLocationTemplate.js';
 import ObjectUtils from '../../streaming/utils/ObjectUtils.js';
 import PatchLocation from '../vo/PatchLocation.js';
 import Period from '../vo/Period.js';
@@ -547,7 +548,7 @@ function DashManifestModel() {
     function getIsDynamic(manifest) {
         let isDynamic = false;
         if (manifest && manifest.hasOwnProperty('type')) {
-            isDynamic = (manifest.type === DashConstants.DYNAMIC);
+            isDynamic = (manifest.type === DashConstants.DYNAMIC) || (manifest.type === DashConstants.EXT_DYNAMIC);
         }
         return isDynamic;
     }
@@ -1178,6 +1179,10 @@ function DashManifestModel() {
                 mpd.timeShiftBufferDepth = manifest.timeShiftBufferDepth;
             }
 
+            if (manifest.hasOwnProperty(DashConstants.EXT_TIMESHIFT_BUFFER_DEPTH)) {
+                mpd.extTimeShiftBufferDepth = manifest.extTimeShiftBufferDepth;
+            }
+
             if (manifest.hasOwnProperty(DashConstants.MAX_SEGMENT_DURATION)) {
                 mpd.maxSegmentDuration = manifest.maxSegmentDuration;
             }
@@ -1536,6 +1541,23 @@ function DashManifestModel() {
         return [];
     }
 
+    function getLocationTemplate(manifest) {
+        if (manifest && manifest.hasOwnProperty(DashConstants.LOCATION_TEMPLATE)) {
+            const element = manifest[DashConstants.LOCATION_TEMPLATE];
+            const mpd = decodeURIComponent(element.mpd || '');
+            const locationTemplate = new MpdLocationTemplate(mpd);
+            if (element.hasOwnProperty(DashConstants.START_NUMBER)) {
+                locationTemplate.startNumber = parseInt(element.startNumber);
+            }
+            if (element.hasOwnProperty(DashConstants.MPD_PERIOD)) {
+                locationTemplate.period = parseInt(element.period);
+            }
+            return locationTemplate;
+        }
+
+        return null;
+    }
+
     function getPatchLocation(manifest) {
         if (manifest && manifest.hasOwnProperty(DashConstants.PATCH_LOCATION)) {
             return manifest[DashConstants.PATCH_LOCATION].map((entry) => {
@@ -1681,6 +1703,7 @@ function DashManifestModel() {
         getLabelsForAdaptation,
         getLanguageForAdaptation,
         getLocation,
+        getLocationTemplate,
         getMainAdaptationSetForPreselection,
         getCommonRepresentationForPreselection,
         getManifestUpdatePeriod,

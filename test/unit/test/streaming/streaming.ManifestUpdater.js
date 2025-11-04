@@ -3,8 +3,10 @@ import Events from '../../../../src/core/events/Events.js';
 import EventBus from '../../../../src/core/EventBus.js';
 import Errors from '../../../../src/core/errors/Errors.js';
 import AdapterMock from '../../mocks/AdapterMock.js';
+import DashMetricsMock from '../../mocks/DashMetricsMock.js';
 import ManifestModelMock from '../../mocks/ManifestModelMock.js';
 import ManifestLoaderMock from '../../mocks/ManifestLoaderMock.js';
+import PlaybackControllerMock from '../../mocks/PlaybackControllerMock.js';
 import ErrorHandlerMock from '../../mocks/ErrorHandlerMock.js';
 import ContentSteeringControllerMock from '../../mocks/ContentSteeringControllerMock.js';
 
@@ -19,8 +21,10 @@ describe('ManifestUpdater', function () {
 
     // init mock
     const adapterMock = new AdapterMock();
+    const dashMetricsMock = new DashMetricsMock();
     const manifestModelMock = new ManifestModelMock();
     const manifestLoaderMock = new ManifestLoaderMock();
+    const playbackControllerMock = new PlaybackControllerMock();
     const errHandlerMock = new ErrorHandlerMock();
     const contentSteeringControllerMock = new ContentSteeringControllerMock();
 
@@ -28,8 +32,10 @@ describe('ManifestUpdater', function () {
 
     manifestUpdater.setConfig({
         adapter: adapterMock,
+        dashMetrics: dashMetricsMock,
         manifestModel: manifestModelMock,
         manifestLoader: manifestLoaderMock,
+        playbackController: playbackControllerMock,
         errHandler: errHandlerMock,
         contentSteeringController: contentSteeringControllerMock
     });

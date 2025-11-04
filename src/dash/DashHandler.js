@@ -35,7 +35,6 @@ import MediaPlayerEvents from '../streaming/MediaPlayerEvents.js';
 import DashConstants from './constants/DashConstants.js';
 import {processUriTemplate} from './utils/SegmentsUtils.js';
 
-
 const DEFAULT_ADJUST_SEEK_TIME_THRESHOLD = 0.5;
 const SEGMENT_START_TIME_DELTA = 0.001;
 

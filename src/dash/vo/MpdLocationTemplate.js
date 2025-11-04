@@ -3,7 +3,7 @@
  * included below. This software may be subject to other third party and contributor
  * rights, including patent rights, and no such rights are granted under this license.
  *
- * Copyright (c) 2013, Dash Industry Forum.
+ * Copyright (c) 2023, Dash Industry Forum.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -28,40 +28,16 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-
 /**
  * @class
  * @ignore
  */
-class DVRInfo {
-    /**
-     * @description This Object holds reference to DVR availability window information.
-     */
-    constructor() {
-
-        /**
-         * The current time of the video element when this was created.
-         * @public
-         */
-        this.time = null;
-        /**
-         * The current Segment Availability Range as an object with start and end properties.
-         * It's delta defined by the timeShiftBufferDepth MPD attribute.
-         * @public
-         */
-        this.range = null;
-        /**
-         * The current Segment Availability Range as an object with start and end properties.
-         * It's delta defined by the extTimeShiftBufferDepth MPD attribute.
-         * @public
-         */
-        this.currentRange = null;
-        /**
-         * Reference to the internal ManifestInfo.js VO.
-         * @public
-         */
-        this.manifestInfo = null;
+class MpdLocationTemplate {
+    constructor(mpd) {
+        this.mpd = mpd || '';
+        this.period = null;
+        this.startNumber = 0;
     }
 }
 
-export default DVRInfo;
+export default MpdLocationTemplate;
