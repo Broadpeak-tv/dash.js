@@ -26626,6 +26626,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _streaming_vo_metrics_HTTPRequest_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../streaming/vo/metrics/HTTPRequest.js */ "./src/streaming/vo/metrics/HTTPRequest.js");
 /* harmony import */ var _EventBus_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./EventBus.js */ "./src/core/EventBus.js");
 /* harmony import */ var _events_Events_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./events/Events.js */ "./src/core/events/Events.js");
+/* harmony import */ var _streaming_rules_SwitchRequest_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../streaming/rules/SwitchRequest.js */ "./src/streaming/rules/SwitchRequest.js");
 /**
  * The copyright in this software is being made available under the BSD License,
  * included below. This software may be subject to other third party and contributor
@@ -26656,6 +26657,7 @@ __webpack_require__.r(__webpack_exports__);
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
+
 
 
 
@@ -26956,6 +26958,10 @@ __webpack_require__.r(__webpack_exports__);
  *                    applyMb: false,
  *                    etpWeightRatio: 0
  *                }
+ *            },
+ *            enhancement: {
+ *                enabled: false,
+ *                codecs: ['lvc1']
  *            },
  *            defaultSchemeIdUri: {
  *                viewpoint: '',
@@ -27322,7 +27328,7 @@ __webpack_require__.r(__webpack_exports__);
  *
  * @property {number} [keepProtectionMediaKeysMaximumOpenSessions=-1]
  * Maximum number of open MediaKeySessions, when keepProtectionMediaKeys is enabled. If set, dash.js will close the oldest sessions when the limit is exceeded. -1 means unlimited.
- * 
+ *
  * @property {boolean} [ignoreEmeEncryptedEvent=false]
  * If set to true the player will ignore "encrypted" and "needkey" events thrown by the EME.
  *
@@ -27567,6 +27573,16 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 /**
+ * @typedef {Object} EnhancementSettings
+ * @property {boolean} [enabled=false]
+ * Enable or disable the scalable enhancement playback (e.g. LCEVC).
+ * @property {Array.<string>} [codecs]
+ * Specifies which scalable enhancement codecs are supported by the player.
+ *
+ * If not specified this value defaults to ['lvc1'].
+ */
+
+/**
  * @typedef {Object} Metrics
  * @property {number} [metricsMaxListDepth=100]
  * Maximum number of metrics that are persisted per type.
@@ -27649,7 +27665,7 @@ __webpack_require__.r(__webpack_exports__);
  *
  * @property {} [assumeDefaultRoleAsMain: true]
  * when no Role descriptor is present, assume main per default
- * 
+ *
  * @property {string} [selectionModeForInitialTrack="highestEfficiency"]
  * Sets the selection mode for the initial track. This mode defines how the initial track will be selected if no initial media settings are set. If initial media settings are set this parameter will be ignored. Available options are:
  *
@@ -27692,6 +27708,8 @@ __webpack_require__.r(__webpack_exports__);
  * Settings related to Common Media Client Data reporting.
  * @property {module:Settings~CmsdSettings} cmsd
  * Settings related to Common Media Server Data parsing.
+ * @property {module:Settings~EnhancementSettings} enhancement
+ * Settings related to scalable enhancement playback (e.g. LCEVC).
  * @property {module:Settings~defaultSchemeIdUri} defaultSchemeIdUri
  * Default schemeIdUri for descriptor type elements
  * These strings are used when not provided with setInitialMediaSettingsFor()
@@ -27927,13 +27945,16 @@ function Settings() {
         enableSupplementalPropertyAdaptationSetSwitching: true,
         rules: {
           throughputRule: {
-            active: true
+            active: true,
+            priority: _streaming_rules_SwitchRequest_js__WEBPACK_IMPORTED_MODULE_7__["default"].PRIORITY.DEFAULT
           },
           bolaRule: {
-            active: true
+            active: true,
+            priority: _streaming_rules_SwitchRequest_js__WEBPACK_IMPORTED_MODULE_7__["default"].PRIORITY.DEFAULT
           },
           insufficientBufferRule: {
             active: true,
+            priority: _streaming_rules_SwitchRequest_js__WEBPACK_IMPORTED_MODULE_7__["default"].PRIORITY.DEFAULT,
             parameters: {
               throughputSafetyFactor: 0.7,
               segmentIgnoreCount: 2
@@ -27941,6 +27962,7 @@ function Settings() {
           },
           switchHistoryRule: {
             active: true,
+            priority: _streaming_rules_SwitchRequest_js__WEBPACK_IMPORTED_MODULE_7__["default"].PRIORITY.DEFAULT,
             parameters: {
               sampleSize: 8,
               switchPercentageThreshold: 0.075
@@ -27948,6 +27970,7 @@ function Settings() {
           },
           droppedFramesRule: {
             active: false,
+            priority: _streaming_rules_SwitchRequest_js__WEBPACK_IMPORTED_MODULE_7__["default"].PRIORITY.DEFAULT,
             parameters: {
               minimumSampleSize: 375,
               droppedFramesPercentageThreshold: 0.15
@@ -27955,6 +27978,7 @@ function Settings() {
           },
           abandonRequestsRule: {
             active: true,
+            priority: _streaming_rules_SwitchRequest_js__WEBPACK_IMPORTED_MODULE_7__["default"].PRIORITY.DEFAULT,
             parameters: {
               abandonDurationMultiplier: 1.8,
               minSegmentDownloadTimeThresholdInMs: 500,
@@ -27962,10 +27986,12 @@ function Settings() {
             }
           },
           l2ARule: {
-            active: false
+            active: false,
+            priority: _streaming_rules_SwitchRequest_js__WEBPACK_IMPORTED_MODULE_7__["default"].PRIORITY.DEFAULT
           },
           loLPRule: {
-            active: false
+            active: false,
+            priority: _streaming_rules_SwitchRequest_js__WEBPACK_IMPORTED_MODULE_7__["default"].PRIORITY.DEFAULT
           }
         },
         throughput: {
@@ -28030,6 +28056,10 @@ function Settings() {
           applyMb: false,
           etpWeightRatio: 0
         }
+      },
+      enhancement: {
+        enabled: false,
+        codecs: ['lvc1']
       },
       defaultSchemeIdUri: {
         viewpoint: '',
@@ -29607,6 +29637,32 @@ function RepresentationController(config) {
     }
   }
   function getCurrentRepresentation() {
+    // Video RepresentationController should return a representation of type video, and enhancement
+    // RepresentationController should return a representation of type enhancement, i.e. type should match
+    if (currentVoRepresentation?.mediaInfo.type === type) {
+      return currentVoRepresentation;
+    } else {
+      return _getCurrentDependentRepresentation();
+    }
+  }
+  function _getCurrentDependentRepresentation() {
+    let currentVoRepDep = currentVoRepresentation?.dependentRepresentation;
+    if (currentVoRepDep) {
+      if (!currentVoRepDep.mediaInfo) {
+        throw new Error('dependentRepresentation has no mediaInfo!');
+      }
+      if (currentVoRepDep.mediaInfo.type === type) {
+        return currentVoRepDep;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Returns the combined effective Representation, i.e. the dependent representation plus its declared complementary representation.
+   * @return {object} Representation
+   */
+  function getCurrentCompositeRepresentation() {
     return currentVoRepresentation;
   }
   function resetInitialSettings() {
@@ -29622,7 +29678,7 @@ function RepresentationController(config) {
       voAvailableRepresentations = availableRepresentations;
       const selectedRepresentation = getRepresentationById(selectedRepresentationId);
       _setCurrentVoRepresentation(selectedRepresentation);
-      if (type !== _streaming_constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].VIDEO && type !== _streaming_constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].AUDIO && (type !== _streaming_constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].TEXT || !isFragmented)) {
+      if (type !== _streaming_constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].VIDEO && type !== _streaming_constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].ENHANCEMENT && type !== _streaming_constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].AUDIO && (type !== _streaming_constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].TEXT || !isFragmented)) {
         endDataUpdate();
         resolve();
         return;
@@ -29791,6 +29847,7 @@ function RepresentationController(config) {
     }
   }
   instance = {
+    getCurrentCompositeRepresentation,
     getCurrentRepresentation,
     getRepresentationById,
     getStreamId,
@@ -30591,6 +30648,16 @@ function DashManifestModel() {
         if (realRepresentation.hasOwnProperty(_constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_7__["default"].CODECS)) {
           voRepresentation.codecs = realRepresentation.codecs;
           voRepresentation.codecFamily = _core_Utils_js__WEBPACK_IMPORTED_MODULE_26__["default"].getCodecFamily(voRepresentation.codecs);
+        }
+        if (realRepresentation.hasOwnProperty(_constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_7__["default"].DEPENDENCY_ID)) {
+          // According to spec, the DEPENDENCY_ID attribute is a space-separated list of ID values
+          // Only using the first ID from this list as the handling of multiple IDs is not supported yet
+          const dependencyIdListString = realRepresentation[_constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_7__["default"].DEPENDENCY_ID].toString();
+          const dependencyIds = dependencyIdListString.split(' ');
+          const dependencyId = dependencyIds[0];
+          voRepresentation.dependencyId = dependencyId;
+          voRepresentation.dependentRepresentation = new _vo_Representation_js__WEBPACK_IMPORTED_MODULE_23__["default"]();
+          voRepresentation.dependentRepresentation.id = dependencyId;
         }
         if (realRepresentation.hasOwnProperty(_constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_7__["default"].MIME_TYPE)) {
           voRepresentation.mimeType = realRepresentation[_constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_7__["default"].MIME_TYPE];
@@ -34060,6 +34127,8 @@ class Representation {
     this.codecFamily = null;
     this.codecPrivateData = null;
     this.codecs = null;
+    this.dependencyId = null;
+    this.dependentRepresentation = null;
     this.essentialProperties = [];
     this.fragmentDuration = null;
     this.frameRate = null;
@@ -38127,6 +38196,12 @@ __webpack_require__.r(__webpack_exports__);
    */
   VIDEO: 'video',
   /**
+   *  @constant {string} ENHANCEMENT Enhancement media type
+   *  @memberof Constants#
+   *  @static
+   */
+  ENHANCEMENT: 'enhancement',
+  /**
    *  @constant {string} AUDIO Audio media type
    *  @memberof Constants#
    *  @static
@@ -39191,6 +39266,9 @@ function CmcdModel() {
     }
     if (mediaType === _streaming_constants_Constants_js__WEBPACK_IMPORTED_MODULE_5__["default"].AUDIO) {
       ot = _svta_common_media_library_cmcd_CmcdObjectType__WEBPACK_IMPORTED_MODULE_11__.CmcdObjectType.AUDIO;
+    }
+    if (request.mediaType === _streaming_constants_Constants_js__WEBPACK_IMPORTED_MODULE_5__["default"].ENHANCEMENT) {
+      ot = _svta_common_media_library_cmcd_CmcdObjectType__WEBPACK_IMPORTED_MODULE_11__.CmcdObjectType.OTHER;
     }
     if (mediaType === _streaming_constants_Constants_js__WEBPACK_IMPORTED_MODULE_5__["default"].TEXT) {
       if (request.representation.mediaInfo.mimeType === 'application/mp4') {
@@ -41986,6 +42064,89 @@ function XHRLoader() {
 }
 XHRLoader.__dashjs_factory_name = 'XHRLoader';
 const factory = _core_FactoryMaker_js__WEBPACK_IMPORTED_MODULE_0__["default"].getClassFactory(XHRLoader);
+/* harmony default export */ __webpack_exports__["default"] = (factory);
+
+/***/ }),
+
+/***/ "./src/streaming/rules/SwitchRequest.js":
+/*!**********************************************!*\
+  !*** ./src/streaming/rules/SwitchRequest.js ***!
+  \**********************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _core_FactoryMaker_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../core/FactoryMaker.js */ "./src/core/FactoryMaker.js");
+/**
+ * The copyright in this software is being made available under the BSD License,
+ * included below. This software may be subject to other third party and contributor
+ * rights, including patent rights, and no such rights are granted under this license.
+ *
+ * Copyright (c) 2013, Dash Industry Forum.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *  * Redistributions of source code must retain the above copyright notice, this
+ *  list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright notice,
+ *  this list of conditions and the following disclaimer in the documentation and/or
+ *  other materials provided with the distribution.
+ *  * Neither the name of Dash Industry Forum nor the names of its
+ *  contributors may be used to endorse or promote products derived from this software
+ *  without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS AS IS AND ANY
+ *  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ *  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ *  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ *  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ *  PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ *  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ */
+
+
+const NO_CHANGE = null;
+const PRIORITY = {
+  DEFAULT: 0.5,
+  STRONG: 1,
+  WEAK: 0
+};
+function SwitchRequest(rep, reas, prio, r) {
+  let instance, representation, priority, reason, rule;
+
+  // check priority value
+  function getPriority(p) {
+    let ret = PRIORITY.DEFAULT;
+
+    // check that p is one of declared priority value
+    if (p === PRIORITY.DEFAULT || p === PRIORITY.STRONG || p === PRIORITY.WEAK) {
+      ret = p;
+    }
+    return ret;
+  }
+
+  // init attributes
+  representation = rep === undefined ? NO_CHANGE : rep;
+  priority = getPriority(prio);
+  reason = reas === undefined ? null : reas;
+  rule = r === undefined ? null : r;
+  instance = {
+    representation,
+    reason,
+    rule,
+    priority
+  };
+  return instance;
+}
+SwitchRequest.__dashjs_factory_name = 'SwitchRequest';
+const factory = _core_FactoryMaker_js__WEBPACK_IMPORTED_MODULE_0__["default"].getClassFactory(SwitchRequest);
+factory.NO_CHANGE = NO_CHANGE;
+factory.PRIORITY = PRIORITY;
+_core_FactoryMaker_js__WEBPACK_IMPORTED_MODULE_0__["default"].updateClassFactory(SwitchRequest.__dashjs_factory_name, factory);
 /* harmony default export */ __webpack_exports__["default"] = (factory);
 
 /***/ }),

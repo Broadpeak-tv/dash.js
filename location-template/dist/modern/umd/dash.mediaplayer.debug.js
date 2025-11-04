@@ -34528,6 +34528,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _streaming_vo_metrics_HTTPRequest_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../streaming/vo/metrics/HTTPRequest.js */ "./src/streaming/vo/metrics/HTTPRequest.js");
 /* harmony import */ var _EventBus_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./EventBus.js */ "./src/core/EventBus.js");
 /* harmony import */ var _events_Events_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./events/Events.js */ "./src/core/events/Events.js");
+/* harmony import */ var _streaming_rules_SwitchRequest_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../streaming/rules/SwitchRequest.js */ "./src/streaming/rules/SwitchRequest.js");
 /**
  * The copyright in this software is being made available under the BSD License,
  * included below. This software may be subject to other third party and contributor
@@ -34558,6 +34559,7 @@ __webpack_require__.r(__webpack_exports__);
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
+
 
 
 
@@ -34858,6 +34860,10 @@ __webpack_require__.r(__webpack_exports__);
  *                    applyMb: false,
  *                    etpWeightRatio: 0
  *                }
+ *            },
+ *            enhancement: {
+ *                enabled: false,
+ *                codecs: ['lvc1']
  *            },
  *            defaultSchemeIdUri: {
  *                viewpoint: '',
@@ -35224,7 +35230,7 @@ __webpack_require__.r(__webpack_exports__);
  *
  * @property {number} [keepProtectionMediaKeysMaximumOpenSessions=-1]
  * Maximum number of open MediaKeySessions, when keepProtectionMediaKeys is enabled. If set, dash.js will close the oldest sessions when the limit is exceeded. -1 means unlimited.
- * 
+ *
  * @property {boolean} [ignoreEmeEncryptedEvent=false]
  * If set to true the player will ignore "encrypted" and "needkey" events thrown by the EME.
  *
@@ -35469,6 +35475,16 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 /**
+ * @typedef {Object} EnhancementSettings
+ * @property {boolean} [enabled=false]
+ * Enable or disable the scalable enhancement playback (e.g. LCEVC).
+ * @property {Array.<string>} [codecs]
+ * Specifies which scalable enhancement codecs are supported by the player.
+ *
+ * If not specified this value defaults to ['lvc1'].
+ */
+
+/**
  * @typedef {Object} Metrics
  * @property {number} [metricsMaxListDepth=100]
  * Maximum number of metrics that are persisted per type.
@@ -35551,7 +35567,7 @@ __webpack_require__.r(__webpack_exports__);
  *
  * @property {} [assumeDefaultRoleAsMain: true]
  * when no Role descriptor is present, assume main per default
- * 
+ *
  * @property {string} [selectionModeForInitialTrack="highestEfficiency"]
  * Sets the selection mode for the initial track. This mode defines how the initial track will be selected if no initial media settings are set. If initial media settings are set this parameter will be ignored. Available options are:
  *
@@ -35594,6 +35610,8 @@ __webpack_require__.r(__webpack_exports__);
  * Settings related to Common Media Client Data reporting.
  * @property {module:Settings~CmsdSettings} cmsd
  * Settings related to Common Media Server Data parsing.
+ * @property {module:Settings~EnhancementSettings} enhancement
+ * Settings related to scalable enhancement playback (e.g. LCEVC).
  * @property {module:Settings~defaultSchemeIdUri} defaultSchemeIdUri
  * Default schemeIdUri for descriptor type elements
  * These strings are used when not provided with setInitialMediaSettingsFor()
@@ -35829,13 +35847,16 @@ function Settings() {
         enableSupplementalPropertyAdaptationSetSwitching: true,
         rules: {
           throughputRule: {
-            active: true
+            active: true,
+            priority: _streaming_rules_SwitchRequest_js__WEBPACK_IMPORTED_MODULE_7__["default"].PRIORITY.DEFAULT
           },
           bolaRule: {
-            active: true
+            active: true,
+            priority: _streaming_rules_SwitchRequest_js__WEBPACK_IMPORTED_MODULE_7__["default"].PRIORITY.DEFAULT
           },
           insufficientBufferRule: {
             active: true,
+            priority: _streaming_rules_SwitchRequest_js__WEBPACK_IMPORTED_MODULE_7__["default"].PRIORITY.DEFAULT,
             parameters: {
               throughputSafetyFactor: 0.7,
               segmentIgnoreCount: 2
@@ -35843,6 +35864,7 @@ function Settings() {
           },
           switchHistoryRule: {
             active: true,
+            priority: _streaming_rules_SwitchRequest_js__WEBPACK_IMPORTED_MODULE_7__["default"].PRIORITY.DEFAULT,
             parameters: {
               sampleSize: 8,
               switchPercentageThreshold: 0.075
@@ -35850,6 +35872,7 @@ function Settings() {
           },
           droppedFramesRule: {
             active: false,
+            priority: _streaming_rules_SwitchRequest_js__WEBPACK_IMPORTED_MODULE_7__["default"].PRIORITY.DEFAULT,
             parameters: {
               minimumSampleSize: 375,
               droppedFramesPercentageThreshold: 0.15
@@ -35857,6 +35880,7 @@ function Settings() {
           },
           abandonRequestsRule: {
             active: true,
+            priority: _streaming_rules_SwitchRequest_js__WEBPACK_IMPORTED_MODULE_7__["default"].PRIORITY.DEFAULT,
             parameters: {
               abandonDurationMultiplier: 1.8,
               minSegmentDownloadTimeThresholdInMs: 500,
@@ -35864,10 +35888,12 @@ function Settings() {
             }
           },
           l2ARule: {
-            active: false
+            active: false,
+            priority: _streaming_rules_SwitchRequest_js__WEBPACK_IMPORTED_MODULE_7__["default"].PRIORITY.DEFAULT
           },
           loLPRule: {
-            active: false
+            active: false,
+            priority: _streaming_rules_SwitchRequest_js__WEBPACK_IMPORTED_MODULE_7__["default"].PRIORITY.DEFAULT
           }
         },
         throughput: {
@@ -35932,6 +35958,10 @@ function Settings() {
           applyMb: false,
           etpWeightRatio: 0
         }
+      },
+      enhancement: {
+        enabled: false,
+        codecs: ['lvc1']
       },
       defaultSchemeIdUri: {
         viewpoint: '',
@@ -37890,7 +37920,9 @@ function DashAdapter() {
     const realAdaptation = adaptation.period.mpd.manifest.Period[adaptation.period.index].AdaptationSet[adaptation.index];
     mediaInfo.id = adaptation.id;
     mediaInfo.index = adaptation.index;
-    mediaInfo.type = adaptation.type;
+    mediaInfo.codec = dashManifestModel.getCodec(realAdaptation);
+    const enhancementCodecs = settings.get().streaming.enhancement.codecs;
+    mediaInfo.type = enhancementCodecs.some(codec => mediaInfo.codec?.includes(codec)) ? _streaming_constants_Constants_js__WEBPACK_IMPORTED_MODULE_10__["default"].ENHANCEMENT : adaptation.type;
     mediaInfo.streamInfo = convertPeriodToStreamInfo(adaptation.period);
     mediaInfo.representationCount = dashManifestModel.getRepresentationCount(realAdaptation);
     mediaInfo.labels = dashManifestModel.getLabelsForAdaptation(realAdaptation);
@@ -37911,7 +37943,6 @@ function DashAdapter() {
       mediaInfo.audioChannelConfiguration = dashManifestModel.getAudioChannelConfigurationForRepresentation(realAdaptation.Representation[0]);
     }
     mediaInfo.roles = dashManifestModel.getRolesForAdaptation(realAdaptation);
-    mediaInfo.codec = dashManifestModel.getCodec(realAdaptation);
     mediaInfo.mimeType = dashManifestModel.getMimeType(realAdaptation);
     mediaInfo.contentProtection = dashManifestModel.getContentProtectionByAdaptation(realAdaptation);
     mediaInfo.bitrateList = dashManifestModel.getBitrateListForAdaptation(realAdaptation);
@@ -40587,6 +40618,32 @@ function RepresentationController(config) {
     }
   }
   function getCurrentRepresentation() {
+    // Video RepresentationController should return a representation of type video, and enhancement
+    // RepresentationController should return a representation of type enhancement, i.e. type should match
+    if (currentVoRepresentation?.mediaInfo.type === type) {
+      return currentVoRepresentation;
+    } else {
+      return _getCurrentDependentRepresentation();
+    }
+  }
+  function _getCurrentDependentRepresentation() {
+    let currentVoRepDep = currentVoRepresentation?.dependentRepresentation;
+    if (currentVoRepDep) {
+      if (!currentVoRepDep.mediaInfo) {
+        throw new Error('dependentRepresentation has no mediaInfo!');
+      }
+      if (currentVoRepDep.mediaInfo.type === type) {
+        return currentVoRepDep;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Returns the combined effective Representation, i.e. the dependent representation plus its declared complementary representation.
+   * @return {object} Representation
+   */
+  function getCurrentCompositeRepresentation() {
     return currentVoRepresentation;
   }
   function resetInitialSettings() {
@@ -40602,7 +40659,7 @@ function RepresentationController(config) {
       voAvailableRepresentations = availableRepresentations;
       const selectedRepresentation = getRepresentationById(selectedRepresentationId);
       _setCurrentVoRepresentation(selectedRepresentation);
-      if (type !== _streaming_constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].VIDEO && type !== _streaming_constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].AUDIO && (type !== _streaming_constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].TEXT || !isFragmented)) {
+      if (type !== _streaming_constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].VIDEO && type !== _streaming_constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].ENHANCEMENT && type !== _streaming_constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].AUDIO && (type !== _streaming_constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].TEXT || !isFragmented)) {
         endDataUpdate();
         resolve();
         return;
@@ -40771,6 +40828,7 @@ function RepresentationController(config) {
     }
   }
   instance = {
+    getCurrentCompositeRepresentation,
     getCurrentRepresentation,
     getRepresentationById,
     getStreamId,
@@ -42090,6 +42148,16 @@ function DashManifestModel() {
         if (realRepresentation.hasOwnProperty(_constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_7__["default"].CODECS)) {
           voRepresentation.codecs = realRepresentation.codecs;
           voRepresentation.codecFamily = _core_Utils_js__WEBPACK_IMPORTED_MODULE_26__["default"].getCodecFamily(voRepresentation.codecs);
+        }
+        if (realRepresentation.hasOwnProperty(_constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_7__["default"].DEPENDENCY_ID)) {
+          // According to spec, the DEPENDENCY_ID attribute is a space-separated list of ID values
+          // Only using the first ID from this list as the handling of multiple IDs is not supported yet
+          const dependencyIdListString = realRepresentation[_constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_7__["default"].DEPENDENCY_ID].toString();
+          const dependencyIds = dependencyIdListString.split(' ');
+          const dependencyId = dependencyIds[0];
+          voRepresentation.dependencyId = dependencyId;
+          voRepresentation.dependentRepresentation = new _vo_Representation_js__WEBPACK_IMPORTED_MODULE_23__["default"]();
+          voRepresentation.dependentRepresentation.id = dependencyId;
         }
         if (realRepresentation.hasOwnProperty(_constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_7__["default"].MIME_TYPE)) {
           voRepresentation.mimeType = realRepresentation[_constants_DashConstants_js__WEBPACK_IMPORTED_MODULE_7__["default"].MIME_TYPE];
@@ -46484,6 +46552,8 @@ class Representation {
     this.codecFamily = null;
     this.codecPrivateData = null;
     this.codecs = null;
+    this.dependencyId = null;
+    this.dependentRepresentation = null;
     this.essentialProperties = [];
     this.fragmentDuration = null;
     this.frameRate = null;
@@ -46864,6 +46934,261 @@ class UTCTiming {
   }
 }
 /* harmony default export */ __webpack_exports__["default"] = (UTCTiming);
+
+/***/ }),
+
+/***/ "./src/streaming/ExternalMediaSource.js":
+/*!**********************************************!*\
+  !*** ./src/streaming/ExternalMediaSource.js ***!
+  \**********************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _ExternalSourceBuffer_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ExternalSourceBuffer.js */ "./src/streaming/ExternalSourceBuffer.js");
+/**
+ * The copyright in this software is being made available under the BSD License,
+ * included below. This software may be subject to other third party and contributor
+ * rights, including patent rights, and no such rights are granted under this license.
+ *
+ * Copyright (c) 2013, Dash Industry Forum.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *  * Redistributions of source code must retain the above copyright notice, this
+ *  list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright notice,
+ *  this list of conditions and the following disclaimer in the documentation and/or
+ *  other materials provided with the distribution.
+ *  * Neither the name of Dash Industry Forum nor the names of its
+ *  contributors may be used to endorse or promote products derived from this software
+ *  without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS AS IS AND ANY
+ *  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ *  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ *  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ *  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ *  PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ *  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ */
+
+class ExternalMediaSource {
+  constructor(eventBus) {
+    this.eventBus = eventBus;
+    this.reset();
+  }
+  get duration() {
+    return this._duration;
+  }
+  set duration(value) {
+    if (this._readyState !== 'open') {
+      throw new Error('ExternalMediaSource is not open');
+    }
+    this._duration = value;
+  }
+  get readyState() {
+    return this._readyState;
+  }
+  addSourceBuffer(mimeType) {
+    if (this._readyState !== 'open') {
+      throw new Error('ExternalMediaSource is not open');
+    }
+    const sourceBuffer = new _ExternalSourceBuffer_js__WEBPACK_IMPORTED_MODULE_0__["default"](mimeType, this.eventBus);
+    this.sourceBuffers.set(sourceBuffer, mimeType);
+    return sourceBuffer;
+  }
+  removeSourceBuffer(sourceBuffer) {
+    if (!this.sourceBuffers.has(sourceBuffer)) {
+      throw new Error('ExternalSourceBuffer not found');
+    }
+    this.sourceBuffers.delete(sourceBuffer);
+  }
+  open() {
+    this._readyState = 'open';
+    this.eventBus.trigger('externalMediaSourceOpen', {});
+  }
+  endOfStream() {
+    if (this._readyState !== 'open') {
+      throw new Error('ExternalMediaSource is not open');
+    }
+    this._readyState = 'ended';
+    this.eventBus.trigger('externalMediaSourceEnded', {});
+  }
+  close() {
+    this._readyState = 'closed';
+    this.eventBus.trigger('externalMediaSourceClosed', {});
+  }
+  reset() {
+    this.sourceBuffers = new Map();
+    this._duration = NaN;
+    this._readyState = 'closed';
+  }
+}
+/* harmony default export */ __webpack_exports__["default"] = (ExternalMediaSource);
+
+/***/ }),
+
+/***/ "./src/streaming/ExternalSourceBuffer.js":
+/*!***********************************************!*\
+  !*** ./src/streaming/ExternalSourceBuffer.js ***!
+  \***********************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/**
+ * The copyright in this software is being made available under the BSD License,
+ * included below. This software may be subject to other third party and contributor
+ * rights, including patent rights, and no such rights are granted under this license.
+ *
+ * Copyright (c) 2013, Dash Industry Forum.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *  * Redistributions of source code must retain the above copyright notice, this
+ *  list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright notice,
+ *  this list of conditions and the following disclaimer in the documentation and/or
+ *  other materials provided with the distribution.
+ *  * Neither the name of Dash Industry Forum nor the names of its
+ *  contributors may be used to endorse or promote products derived from this software
+ *  without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS AS IS AND ANY
+ *  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ *  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ *  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ *  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ *  PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ *  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ */
+
+class ExternalSourceBuffer {
+  constructor(mimeType, eventBus) {
+    this.eventBus = eventBus;
+    this.mimeType = mimeType;
+    this.updating = false;
+    this.chunks = [];
+    this.appendWindowStart = 0;
+    this.appendWindowEnd = Infinity;
+    this.timestampOffset = 0;
+    this.mode = 'segments';
+  }
+  appendBuffer(segmentData, segmentStartTime, segmentEndTime) {
+    if (this.updating) {
+      throw new Error('SourceBuffer is currently updating');
+    }
+    this.updating = true;
+    this.eventBus.trigger('externalSourceBufferUpdateStart', {
+      mimeType: this.mimeType,
+      request: 'appendBuffer',
+      data: segmentData,
+      start: segmentStartTime,
+      end: segmentEndTime
+    });
+    if (!Number.isNaN(segmentStartTime)) {
+      this.chunks.push({
+        data: segmentData,
+        start: segmentStartTime,
+        end: segmentEndTime
+      });
+      this.chunks.sort((a, b) => a.start - b.start); // sort ascending based on start times
+    }
+    // Simulate async data append
+    setTimeout(() => {
+      this.updating = false;
+      this.eventBus.trigger('externalSourceBufferUpdating', {
+        mimeType: this.mimeType
+      });
+      this.eventBus.trigger('externalSourceBufferUpdateEnd', {
+        mimeType: this.mimeType
+      });
+    }, 10);
+  }
+  abort() {
+    if (this.updating) {
+      this.updating = false;
+      this.eventBus.trigger('externalSourceBufferAbort', {
+        mimeType: this.mimeType
+      });
+      this.eventBus.trigger('externalSourceBufferUpdateEnd', {
+        mimeType: this.mimeType
+      });
+    }
+  }
+  remove(start, end) {
+    if (this.updating) {
+      throw new Error('SourceBuffer is currently updating');
+    }
+    this.updating = true;
+    this.eventBus.trigger('externalSourceBufferUpdateStart', {
+      mimeType: this.mimeType,
+      request: 'remove',
+      start: start,
+      end: end
+    });
+    this.chunks = this.chunks.filter(segment => segment.end <= start || segment.start >= end);
+
+    // Simulate async data removal
+    setTimeout(() => {
+      this.updating = false;
+      this.eventBus.trigger('externalSourceBufferUpdating', {
+        mimeType: this.mimeType
+      });
+      this.eventBus.trigger('externalSourceBufferUpdateEnd', {
+        mimeType: this.mimeType
+      });
+    }, 10);
+  }
+  get buffered() {
+    return new TimeRanges(this.chunks);
+  }
+}
+
+/**
+ * Implements TimeRanges interface as described in https://html.spec.whatwg.org/multipage/media.html#timeranges
+ * According to the spec, ranges in such an object are ordered, don't overlap, and don't touch
+ * (adjacent ranges are folded into one bigger range).
+ */
+class TimeRanges {
+  constructor(chunks) {
+    this._ranges = [];
+
+    // Process ordered chunks into TimeRanges
+    for (const chunk of chunks) {
+      const ranges = this._ranges;
+      const newRange = {
+        start: chunk.start,
+        end: chunk.end
+      };
+      const lastRange = ranges.length ? ranges[ranges.length - 1] : null;
+      if (!lastRange || newRange.start > lastRange.end) {
+        ranges.push(newRange); // empty or discontinuity in buffered period
+      } else {
+        lastRange.end = newRange.end; // continuous buffered period
+      }
+    }
+  }
+  get length() {
+    return this._ranges.length;
+  }
+  start(index) {
+    return this._ranges[index].start;
+  }
+  end(index) {
+    return this._ranges[index].end;
+  }
+}
+/* harmony default export */ __webpack_exports__["default"] = (ExternalSourceBuffer);
 
 /***/ }),
 
@@ -51199,6 +51524,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _constants_Constants_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./constants/Constants.js */ "./src/streaming/constants/Constants.js");
 /* harmony import */ var _vo_metrics_HTTPRequest_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./vo/metrics/HTTPRequest.js */ "./src/streaming/vo/metrics/HTTPRequest.js");
 /* harmony import */ var _core_events_Events_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../core/events/Events.js */ "./src/core/events/Events.js");
+/* harmony import */ var _ExternalSourceBuffer_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./ExternalSourceBuffer.js */ "./src/streaming/ExternalSourceBuffer.js");
 /**
  * The copyright in this software is being made available under the BSD License,
  * included below. This software may be subject to other third party and contributor
@@ -51229,6 +51555,7 @@ __webpack_require__.r(__webpack_exports__);
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
+
 
 
 
@@ -51423,7 +51750,7 @@ function SourceBufferSink(config) {
   }
   function getAllBufferRanges() {
     try {
-      return buffer.buffered;
+      return buffer?.buffered;
     } catch (e) {
       logger.error('getAllBufferRanges exception: ' + e.message);
       return null;
@@ -51532,7 +51859,9 @@ function SourceBufferSink(config) {
           try {
             logger.debug(`Appending ${nextChunk.data.segmentType} from period ${nextChunk.data.streamId} to buffer. Request URL: ${nextChunk.request.url}, Representation: ID: ${nextChunk.data.representation.id}, bitrate: ${nextChunk.data.representation.bitrateInKbit}`);
           } catch (e) {}
-          if (buffer.appendBuffer) {
+          if (buffer instanceof _ExternalSourceBuffer_js__WEBPACK_IMPORTED_MODULE_8__["default"]) {
+            buffer.appendBuffer(nextChunk.data.bytes, nextChunk.data.start, nextChunk.data.end);
+          } else if (buffer.appendBuffer) {
             buffer.appendBuffer(nextChunk.data.bytes);
           } else {
             buffer.append(nextChunk.data.bytes, nextChunk.data);
@@ -51617,7 +51946,7 @@ function SourceBufferSink(config) {
   function _waitForUpdateEnd(callback) {
     try {
       callbacks.push(callback);
-      if (!buffer.updating) {
+      if (buffer && !buffer.updating) {
         _executeCallback();
       }
     } catch (e) {
@@ -51671,7 +52000,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils_BoxParser_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./utils/BoxParser.js */ "./src/streaming/utils/BoxParser.js");
 /* harmony import */ var _utils_URLUtils_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./utils/URLUtils.js */ "./src/streaming/utils/URLUtils.js");
 /* harmony import */ var _controllers_BlacklistController_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./controllers/BlacklistController.js */ "./src/streaming/controllers/BlacklistController.js");
-/* harmony import */ var _vo_MediaInfoSelectionInput_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./vo/MediaInfoSelectionInput.js */ "./src/streaming/vo/MediaInfoSelectionInput.js");
+/* harmony import */ var _ExternalMediaSource_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./ExternalMediaSource.js */ "./src/streaming/ExternalMediaSource.js");
+/* harmony import */ var _vo_MediaInfoSelectionInput_js__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./vo/MediaInfoSelectionInput.js */ "./src/streaming/vo/MediaInfoSelectionInput.js");
 /**
  * The copyright in this software is being made available under the BSD License,
  * included below. This software may be subject to other third party and contributor
@@ -51702,6 +52032,7 @@ __webpack_require__.r(__webpack_exports__);
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
+
 
 
 
@@ -51838,15 +52169,15 @@ function Stream(config) {
   /**
    * Activates Stream by re-initializing some of its components
    * @param {MediaSource} mediaSource
-   * @param {array} previousBufferSinks
+   * @param {array} previousSourceBufferSinks
    * @param representationsFromPreviousPeriod
    * @memberof Stream#
    */
-  function activate(mediaSource, previousBufferSinks) {
+  function activate(mediaSource, previousSourceBufferSinks) {
     let representationsFromPreviousPeriod = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
     return new Promise((resolve, reject) => {
       if (isActive) {
-        resolve(previousBufferSinks);
+        resolve();
         return;
       }
       if (getPreloaded()) {
@@ -51854,10 +52185,10 @@ function Stream(config) {
         eventBus.trigger(_core_events_Events_js__WEBPACK_IMPORTED_MODULE_6__["default"].STREAM_ACTIVATED, {
           streamInfo
         });
-        resolve(previousBufferSinks);
+        resolve();
         return;
       }
-      _initializeMedia(mediaSource, previousBufferSinks, representationsFromPreviousPeriod).then(bufferSinks => {
+      _initializeMedia(mediaSource, previousSourceBufferSinks, representationsFromPreviousPeriod).then(() => {
         isActive = true;
         if (representationsFromPreviousPeriod && representationsFromPreviousPeriod.length > 0) {
           startScheduleControllers();
@@ -51865,7 +52196,7 @@ function Stream(config) {
         eventBus.trigger(_core_events_Events_js__WEBPACK_IMPORTED_MODULE_6__["default"].STREAM_ACTIVATED, {
           streamInfo
         });
-        resolve(bufferSinks);
+        resolve();
       }).catch(e => {
         reject(e);
       });
@@ -51896,24 +52227,24 @@ function Stream(config) {
   /**
    *
    * @param {object} mediaSource
-   * @param {array} previousBufferSinks
+   * @param {array} previousSourceBufferSinks
    * @param representationsFromPreviousPeriod
    * @return {Promise<Array>}
    * @private
    */
-  function _initializeMedia(mediaSource, previousBufferSinks) {
+  function _initializeMedia(mediaSource, previousSourceBufferSinks) {
     let representationsFromPreviousPeriod = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-    return _commonMediaInitialization(mediaSource, previousBufferSinks, representationsFromPreviousPeriod);
+    return _commonMediaInitialization(mediaSource, previousSourceBufferSinks, representationsFromPreviousPeriod);
   }
 
   /**
    *
    * @param {object} mediaSource
-   * @param {array} previousBufferSinks
+   * @param {array} previousSourceBufferSinks
    * @return {Promise<array>}
    * @private
    */
-  function _commonMediaInitialization(mediaSource, previousBufferSinks, representationsFromPreviousPeriod) {
+  function _commonMediaInitialization(mediaSource, previousSourceBufferSinks, representationsFromPreviousPeriod) {
     return new Promise((resolve, reject) => {
       checkConfig();
       _addInlineEvents();
@@ -51929,7 +52260,7 @@ function Stream(config) {
         }
       });
       Promise.all(promises).then(() => {
-        return _createBufferSinks(previousBufferSinks);
+        return _createBufferSinks(previousSourceBufferSinks);
       }).then(bufferSinks => {
         if (streamProcessors.length === 0) {
           const msg = 'No streams to play.';
@@ -51978,6 +52309,7 @@ function Stream(config) {
     let embeddedMediaInfos = [];
     let mediaInfo = null;
     let initialMediaInfo;
+    let enhancementMediaInfoIndex = -1;
     if (!allMediaForType || allMediaForType.length === 0) {
       logger.info('No ' + type + ' data.');
       return Promise.resolve();
@@ -51996,6 +52328,9 @@ function Stream(config) {
       }
       if (_isMediaSupported(mediaInfo)) {
         mediaController.addTrack(mediaInfo);
+      }
+      if (mediaInfo.type === _constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].ENHANCEMENT) {
+        enhancementMediaInfoIndex = i;
       }
     }
     if (embeddedMediaInfos.length > 0) {
@@ -52031,12 +52366,24 @@ function Stream(config) {
       mediaInfo: mediaInfo
     });
     mediaController.setInitialMediaSettingsForType(type, streamInfo);
-    let streamProcessor = _createStreamProcessor(allMediaForType, mediaSource);
+    let streamProcessor = _createStreamProcessor(allMediaForType, mediaSource, type);
+    if (enhancementMediaInfoIndex >= 0) {
+      // An adaptation set, mapped to mediaInfo, of enhancement type was found so a stream processor shall be created for it
+      // the enhancement stream processor will work in parallel to the media stream processor it enhances
+      let enhancementMediaSource = new _ExternalMediaSource_js__WEBPACK_IMPORTED_MODULE_14__["default"](eventBus);
+      enhancementMediaSource.open();
+      enhancementMediaSource.duration = streamInfo.manifestInfo.duration;
+      let enhancementStreamProcessor = _createStreamProcessor(allMediaForType, enhancementMediaSource, _constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].ENHANCEMENT);
+      enhancementStreamProcessor.selectMediaInfo(new _vo_MediaInfoSelectionInput_js__WEBPACK_IMPORTED_MODULE_15__["default"]({
+        newMediaInfo: allMediaForType[enhancementMediaInfoIndex]
+      }));
+      streamProcessor.setEnhancementStreamProcessor(enhancementStreamProcessor);
+    }
     initialMediaInfo = mediaController.getCurrentTrackFor(type, streamInfo.id);
     if (initialMediaInfo) {
       // In case of mixed fragmented and embedded text tracks, check if initial selected text track is not an embedded track
       const newMediaInfo = type !== _constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].TEXT || !initialMediaInfo.isEmbedded ? initialMediaInfo : allMediaForType[0];
-      const mediaInfoSelectionInput = new _vo_MediaInfoSelectionInput_js__WEBPACK_IMPORTED_MODULE_14__["default"]({
+      const mediaInfoSelectionInput = new _vo_MediaInfoSelectionInput_js__WEBPACK_IMPORTED_MODULE_15__["default"]({
         newMediaInfo,
         previouslySelectedRepresentation: representationFromPreviousPeriod
       });
@@ -52067,10 +52414,11 @@ function Stream(config) {
    * Creates the StreamProcessor for a given media type.
    * @param {array} allMediaForType
    * @param {object} mediaSource
+   * @param {object} streamProcessorMediaType
    * @private
    */
-  function _createStreamProcessor(allMediaForType, mediaSource) {
-    const mediaInfo = allMediaForType && allMediaForType.length > 0 ? allMediaForType[0] : null;
+  function _createStreamProcessor(allMediaForType, mediaSource, streamProcessorMediaType) {
+    const mediaInfo = allMediaForType && allMediaForType.length > 0 ? allMediaForType.filter(m => m.type === streamProcessorMediaType)[0] : null;
     let fragmentModel = fragmentController.getModel(mediaInfo ? mediaInfo.type : null);
     const type = mediaInfo ? mediaInfo.type : null;
     const mimeType = mediaInfo ? mediaInfo.mimeType : null;
@@ -52109,16 +52457,16 @@ function Stream(config) {
 
   /**
    * Creates the SourceBufferSink objects for all StreamProcessors
-   * @param {array} previousBuffersSinks
+   * @param {array} previousSourceBufferSinks
    * @return {Promise<object>}
    * @private
    */
-  function _createBufferSinks(previousBuffersSinks) {
+  function _createBufferSinks(previousSourceBufferSinks) {
     return new Promise(resolve => {
       const buffers = {};
       const promises = streamProcessors.map(sp => {
         const oldRepresentation = sp.getRepresentation();
-        return sp.createBufferSinks(previousBuffersSinks, oldRepresentation);
+        return sp.createBufferSinks(previousSourceBufferSinks, oldRepresentation);
       });
       Promise.all(promises).then(bufferSinks => {
         bufferSinks.forEach(sink => {
@@ -52366,7 +52714,7 @@ function Stream(config) {
       processor.clearScheduleTimer();
       processor.setTrackSwitchInProgress(true);
       const oldRepresentation = processor.getRepresentation();
-      processor.selectMediaInfo(new _vo_MediaInfoSelectionInput_js__WEBPACK_IMPORTED_MODULE_14__["default"]({
+      processor.selectMediaInfo(new _vo_MediaInfoSelectionInput_js__WEBPACK_IMPORTED_MODULE_15__["default"]({
         newMediaInfo
       })).then(() => {
         const replaceBuffer = e && e.options && e.options.hasOwnProperty('replaceBuffer') ? e.options.replaceBuffer : false;
@@ -52465,7 +52813,7 @@ function Stream(config) {
     for (let i = 0; i < streamProcessors.length; i++) {
       streamProcessor = streamProcessors[i];
       type = streamProcessor.getType();
-      if (type === _constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].AUDIO || type === _constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].VIDEO || type === _constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].TEXT) {
+      if (type === _constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].AUDIO || type === _constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].VIDEO || type === _constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].TEXT || type === _constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].ENHANCEMENT) {
         arr.push(streamProcessor);
       }
     }
@@ -52500,7 +52848,7 @@ function Stream(config) {
         if (allMediaForType) {
           for (let j = 0; j < allMediaForType.length; j++) {
             if (adapter.areMediaInfosEqual(currentMediaInfo, allMediaForType[j])) {
-              promises.push(streamProcessor.selectMediaInfo(new _vo_MediaInfoSelectionInput_js__WEBPACK_IMPORTED_MODULE_14__["default"]({
+              promises.push(streamProcessor.selectMediaInfo(new _vo_MediaInfoSelectionInput_js__WEBPACK_IMPORTED_MODULE_15__["default"]({
                 newMediaInfo: allMediaForType[j]
               })));
             }
@@ -52522,7 +52870,7 @@ function Stream(config) {
           const oldRepresentation = processor.getRepresentation();
           processor.setTrackSwitchInProgress(true);
           promises.push(processor.prepareTrackSwitch(oldRepresentation));
-          promises.push(processor.selectMediaInfo(new _vo_MediaInfoSelectionInput_js__WEBPACK_IMPORTED_MODULE_14__["default"]({
+          promises.push(processor.selectMediaInfo(new _vo_MediaInfoSelectionInput_js__WEBPACK_IMPORTED_MODULE_15__["default"]({
             newMediaInfo
           })));
         }
@@ -52751,7 +53099,7 @@ function StreamProcessor(config) {
   let textController = config.textController;
   let timelineConverter = config.timelineConverter;
   let type = config.type;
-  let bufferController, bufferingTime, currentMediaInfo, dashHandler, instance, isDynamic, logger, mediaInfoArr, pendingSwitchToVoRepresentation, qualityChangeInProgress, representationController, scheduleController, segmentsController, shouldRepeatRequest, shouldUseExplicitTimeForRequest, trackSwitchInProgress;
+  let bufferController, bufferingTime, containsVideoTrack, currentMediaInfo, dashHandler, enhancementStreamProcessor, instance, isDynamic, logger, mediaInfoArr, pendingSwitchToVoRepresentation, qualityChangeInProgress, representationController, scheduleController, segmentsController, shouldRepeatRequest, shouldUseExplicitTimeForRequest, trackSwitchInProgress;
   function setup() {
     logger = (0,_core_Debug_js__WEBPACK_IMPORTED_MODULE_16__["default"])(context).getInstance().getLogger(instance);
     resetInitialSettings();
@@ -52839,6 +53187,7 @@ function StreamProcessor(config) {
       representationController,
       settings
     });
+    containsVideoTrack = hasVideoTrack;
     scheduleController.initialize(hasVideoTrack);
     bufferingTime = 0;
     shouldUseExplicitTimeForRequest = false;
@@ -52857,6 +53206,7 @@ function StreamProcessor(config) {
     shouldUseExplicitTimeForRequest = false;
     shouldRepeatRequest = false;
     qualityChangeInProgress = false;
+    enhancementStreamProcessor = null;
     trackSwitchInProgress = false;
     _resetPendingSwitchToRepresentation();
   }
@@ -52902,6 +53252,10 @@ function StreamProcessor(config) {
   }
   function setMediaInfoArray(value) {
     mediaInfoArr = value;
+  }
+  function setEnhancementStreamProcessor(value) {
+    enhancementStreamProcessor = value;
+    logger.info('enhancementStreamProcessor = ' + enhancementStreamProcessor);
   }
 
   /**
@@ -53198,7 +53552,7 @@ function StreamProcessor(config) {
     scheduleController.startScheduleTimer(playbackController.getLowLatencyModeEnabled() ? settings.get().streaming.scheduling.lowLatencyTimeout : settings.get().streaming.scheduling.defaultTimeout);
   }
   function _onDataUpdateCompleted() {
-    const currentRepresentation = representationController.getCurrentRepresentation();
+    const currentRepresentation = representationController.getCurrentCompositeRepresentation();
     if (!bufferController.getIsBufferingCompleted()) {
       bufferController.updateBufferTimestampOffset(currentRepresentation);
     }
@@ -53292,6 +53646,7 @@ function StreamProcessor(config) {
       }
       _setCurrentMediaInfo(selectedValues.currentMediaInfo);
       eventBus.trigger();
+      _selectMediaInfoForEnhancementStreamProcessor(selectedValues);
 
       // Update Representation Controller with the new data. Note we do not filter any Representations here as the filter values might change over time.
       const voRepresentations = abrController.getPossibleVoRepresentations(currentMediaInfo, false);
@@ -53345,6 +53700,15 @@ function StreamProcessor(config) {
       selectedRepresentation: representationController.getCurrentRepresentation()
     };
   }
+  function _selectMediaInfoForEnhancementStreamProcessor(selectedValues) {
+    if (enhancementStreamProcessor && selectedValues.selectedRepresentation.dependentRepresentation) {
+      logger.info('[' + type + '] selectMediaInfo : call selectMediaInfo on enhancementStreamProcessor for index = ' + selectedValues.selectedRepresentation.absoluteIndex);
+      enhancementStreamProcessor.selectMediaInfo(new _vo_MediaInfoSelectionInput_js__WEBPACK_IMPORTED_MODULE_22__["default"]({
+        newMediaInfo: selectedValues.selectedRepresentation.mediaInfo,
+        newRepresentation: selectedValues.selectedRepresentation
+      }));
+    }
+  }
 
   /**
    * The quality has changed which means we have switched to a different representation.
@@ -53355,14 +53719,18 @@ function StreamProcessor(config) {
     if (!e.newRepresentation) {
       return;
     }
+    const qualityChangeHandled = _prepareQualityChangeForEnhancementStreamProcessor(e);
+    if (qualityChangeHandled) {
+      return;
+    }
     if (pendingSwitchToVoRepresentation && pendingSwitchToVoRepresentation.enabled) {
       logger.warn(`Canceling queued representation switch to ${pendingSwitchToVoRepresentation.newRepresentation.id} for ${type}`);
     }
     if (e.isAdaptationSetSwitch) {
-      logger.debug(`Preparing quality switch to different AdaptationSet for type ${type}`);
+      logger.debug(`Preparing quality switch to different AdaptationSet for type ${type} from representation id ${e.oldRepresentation.id} to ${e.newRepresentation.id}`);
       _prepareAdaptationSwitchQualityChange(e);
     } else {
-      logger.debug(`Preparing quality within the same AdaptationSet for type ${type}`);
+      logger.debug(`Preparing quality within the same AdaptationSet for type ${type} from representation id ${e.oldRepresentation.id} to ${e.newRepresentation.id}`);
       _prepareNonAdaptationSwitchQualityChange(e);
     }
   }
@@ -53535,6 +53903,41 @@ function StreamProcessor(config) {
     }
     _resetPendingSwitchToRepresentation();
     qualityChangeInProgress = false;
+  }
+
+  /**
+   * Prepare quality change for enhancement stream processor. Returns true if the change has been handled, false otherwise.
+   * @param {object} e 
+   * @return {boolean} qualityChangeHandled returns true if the change has been handled, false otherwise
+   */
+  function _prepareQualityChangeForEnhancementStreamProcessor(e) {
+    if (enhancementStreamProcessor) {
+      // Pass quality change to enhancement stream processor
+      enhancementStreamProcessor.prepareQualityChange(e);
+    } else if (type === _constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].ENHANCEMENT) {
+      // This is an enhancement stream processor, handle the quality change
+      const oldRepType = e.oldRepresentation.mediaInfo.type;
+      const newRepType = e.newRepresentation.mediaInfo.type;
+      if (oldRepType === _constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].ENHANCEMENT && newRepType === _constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].VIDEO) {
+        // The new representation has no enhancement, stop the enhancement stream processor
+        logger.info('Stop ' + type + ' stream processor');
+        scheduleController.reset();
+        return true;
+      } else if (oldRepType === _constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].VIDEO && newRepType === _constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].ENHANCEMENT) {
+        // The new representation has an enhancement, start the enhancement stream processor
+        logger.info('Start ' + type + ' stream processor');
+        selectMediaInfo(new _vo_MediaInfoSelectionInput_js__WEBPACK_IMPORTED_MODULE_22__["default"]({
+          newMediaInfo: e.newRepresentation.mediaInfo,
+          newRepresentation: e.newRepresentation
+        })).then(() => {
+          scheduleController.setup();
+          scheduleController.initialize(containsVideoTrack);
+          scheduleController.startScheduleTimer();
+        });
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -54043,6 +54446,7 @@ function StreamProcessor(config) {
     probeNextRequest,
     reset,
     selectMediaInfo,
+    setEnhancementStreamProcessor,
     setExplicitBufferingTime,
     setMediaInfoArray,
     setMediaSource,
@@ -54283,6 +54687,12 @@ __webpack_require__.r(__webpack_exports__);
    *  @static
    */
   VIDEO: 'video',
+  /**
+   *  @constant {string} ENHANCEMENT Enhancement media type
+   *  @memberof Constants#
+   *  @static
+   */
+  ENHANCEMENT: 'enhancement',
   /**
    *  @constant {string} AUDIO Audio media type
    *  @memberof Constants#
@@ -54974,6 +55384,8 @@ function AbrController() {
         voRepresentations = voRepresentations.concat(currentVoRepresentations);
       }
     });
+    // Resolve dependencies
+    voRepresentations = _resolveDependencies(voRepresentations);
 
     // Now sort by quality (usually simply by bitrate)
     voRepresentations = _sortRepresentationsByQuality(voRepresentations);
@@ -55167,6 +55579,18 @@ function AbrController() {
     });
     return voRepresentations;
   }
+  function _resolveDependencies(voRepresentations) {
+    voRepresentations.forEach(rep => {
+      if (rep.dependentRepresentation && rep.dependentRepresentation.mediaInfo === null) {
+        let dependentId = rep.dependentRepresentation.id;
+        let dependentRep = voRepresentations.find(element => element.id === dependentId);
+        if (dependentRep) {
+          rep.dependentRepresentation = dependentRep;
+        }
+      }
+    });
+    return voRepresentations;
+  }
 
   /**
    * While fragment loading is in progress we check if we might need to abort the request
@@ -55293,7 +55717,7 @@ function AbrController() {
         return false;
       }
       const streamProcessor = streamProcessorDict[streamId][type];
-      const currentRepresentation = streamProcessor.getRepresentation();
+      const currentRepresentation = streamProcessor.getRepresentationController()?.getCurrentCompositeRepresentation();
       const rulesContext = (0,_rules_RulesContext_js__WEBPACK_IMPORTED_MODULE_7__["default"])(context).create({
         abrController: instance,
         throughputController,
@@ -55313,7 +55737,7 @@ function AbrController() {
         newRepresentation
       });
       if (newRepresentation.id !== currentRepresentation.id && (abandonmentStateDict[streamId][type].state === _constants_MetricsConstants_js__WEBPACK_IMPORTED_MODULE_2__["default"].ALLOW_LOAD || newRepresentation.absoluteIndex < currentRepresentation.absoluteIndex)) {
-        _changeQuality(currentRepresentation, newRepresentation, switchRequest.reason);
+        _changeQuality(type, currentRepresentation, newRepresentation, switchRequest.reason);
         return true;
       }
       return false;
@@ -55338,9 +55762,9 @@ function AbrController() {
       return;
     }
     const streamProcessor = streamProcessorDict[streamInfo.id][type];
-    const currentRepresentation = streamProcessor.getRepresentation();
+    const currentRepresentation = streamProcessor.getRepresentationController()?.getCurrentCompositeRepresentation();
     if (!currentRepresentation || representation.id !== currentRepresentation.id) {
-      _changeQuality(currentRepresentation, representation, reason);
+      _changeQuality(type, currentRepresentation, representation, reason);
     }
   }
 
@@ -55364,9 +55788,8 @@ function AbrController() {
    * @param {string} reason
    * @private
    */
-  function _changeQuality(oldRepresentation, newRepresentation, reason) {
+  function _changeQuality(type, oldRepresentation, newRepresentation, reason) {
     const streamId = newRepresentation.mediaInfo.streamInfo.id;
-    const type = newRepresentation.mediaInfo.type;
     if (type && streamProcessorDict[streamId] && streamProcessorDict[streamId][type]) {
       const streamInfo = streamProcessorDict[streamId][type].getStreamInfo();
       const bufferLevel = dashMetrics.getCurrentBufferLevel(type);
@@ -55893,11 +56316,11 @@ function BufferController(config) {
   /**
    * Creates a SourceBufferSink object
    * @param {object} mediaInfo
-   * @param {array} oldBufferSinks
+   * @param {Map<any, any>} previousBufferSinks
    * @return {Promise<Object>} SourceBufferSink
    */
   function createBufferSink(mediaInfo) {
-    let oldBufferSinks = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+    let previousBufferSinks = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new Map();
     let oldRepresentation = arguments.length > 2 ? arguments[2] : undefined;
     return new Promise((resolve, reject) => {
       if (!initCache || !mediaInfo) {
@@ -55906,7 +56329,7 @@ function BufferController(config) {
       }
       if (mediaSource) {
         isPrebuffering = false;
-        _initializeSinkForMseBuffering(mediaInfo, oldBufferSinks, oldRepresentation).then(sink => {
+        _initializeSinkForMseBuffering(mediaInfo, previousBufferSinks, oldRepresentation).then(sink => {
           resolve(sink);
         }).catch(e => {
           reject(e);
@@ -55931,14 +56354,14 @@ function BufferController(config) {
       });
     });
   }
-  function _initializeSinkForMseBuffering(mediaInfo, oldBufferSinks, oldRepresentation) {
+  function _initializeSinkForMseBuffering(mediaInfo, previousBufferSinks, oldRepresentation) {
     return new Promise(resolve => {
       sourceBufferSink = (0,_SourceBufferSink_js__WEBPACK_IMPORTED_MODULE_3__["default"])(context).create({
         mediaSource,
         textController,
         eventBus
       });
-      _initializeSink(mediaInfo, oldBufferSinks, oldRepresentation).then(() => {
+      _initializeSink(mediaInfo, previousBufferSinks, oldRepresentation).then(() => {
         return updateBufferTimestampOffset(representationController.getCurrentRepresentation());
       }).then(() => {
         resolve(sourceBufferSink);
@@ -55948,16 +56371,20 @@ function BufferController(config) {
       });
     });
   }
-  function _initializeSink(mediaInfo, oldBufferSinks, oldRepresentation) {
+  function _initializeSink(mediaInfo, previousBufferSinks, oldRepresentation) {
     const newRepresentation = representationController.getCurrentRepresentation();
-    if (oldBufferSinks && oldBufferSinks[type] && (type === _constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].VIDEO || type === _constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].AUDIO)) {
-      return _initializeSinkForStreamSwitch(mediaInfo, newRepresentation, oldBufferSinks, oldRepresentation);
+    let previousBufferSink = null;
+    if (type === _constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].VIDEO || type === _constants_Constants_js__WEBPACK_IMPORTED_MODULE_0__["default"].AUDIO) {
+      previousBufferSink = previousBufferSinks.get(type);
+    }
+    if (previousBufferSink) {
+      return _initializeSinkForBufferReuse(mediaInfo, newRepresentation, previousBufferSink, oldRepresentation);
     } else {
       return _initializeSinkForFirstUse(mediaInfo, newRepresentation);
     }
   }
-  function _initializeSinkForStreamSwitch(mediaInfo, newRepresentation, oldBufferSinks, oldRepresentation) {
-    sourceBufferSink.initializeForStreamSwitch(mediaInfo, newRepresentation, oldBufferSinks[type]);
+  function _initializeSinkForBufferReuse(mediaInfo, newRepresentation, previousBufferSink, oldRepresentation) {
+    sourceBufferSink.initializeForStreamSwitch(mediaInfo, newRepresentation, previousBufferSink);
     const promises = [];
     promises.push(sourceBufferSink.abortBeforeAppend());
     promises.push(updateAppendWindow());
@@ -56280,7 +56707,13 @@ function BufferController(config) {
       return Promise.resolve();
     }
     logger.debug(`Using changeType() to switch from codec ${oldRepresentation.codecs} to ${newRepresentation.codecs}`);
-    return sourceBufferSink.changeType(newRepresentation);
+
+    // SourceBufferSink's changeType will be invoked with the AbrRepresentation, ie.
+    // representation from the manifest. However, MSE SourceBuffer doesn't understand
+    // enhancement codecs. In the case an enhancement representation is selected, resolve
+    // the dependent (base) representation before passing the codecs to MSE's changeType
+    const representation = newRepresentation.dependentRepresentation ? newRepresentation.dependentRepresentation : newRepresentation;
+    return sourceBufferSink.changeType(representation);
   }
   function pruneAllSafely() {
     return new Promise((resolve, reject) => {
@@ -58992,6 +59425,7 @@ function MediaController() {
     if (!track) {
       return;
     }
+    logger.info('addTrack with track.codec=\'' + track.codec + '\', track.type=\'' + track.type + '\'');
     const mediaType = track.type;
     if (!_isMultiTrackSupportedByType(mediaType)) {
       return;
@@ -61216,6 +61650,7 @@ function ScheduleController(config) {
     setCheckPlaybackQuality,
     setInitSegmentRequired,
     setLastInitializedRepresentationId,
+    setup,
     setSwitchTrack,
     setTimeToLoadDelay,
     startScheduleTimer
@@ -61311,7 +61746,7 @@ const DVR_WAITING_OFFSET = 2;
 function StreamController() {
   const context = this.context;
   const eventBus = (0,_core_EventBus_js__WEBPACK_IMPORTED_MODULE_4__["default"])(context).getInstance();
-  let instance, logger, capabilities, capabilitiesFilter, manifestUpdater, manifestLoader, manifestModel, adapter, dashMetrics, mediaSourceController, timeSyncController, contentSteeringController, baseURLController, segmentBaseController, uriFragmentModel, abrController, throughputController, mediaController, eventController, initCache, errHandler, timelineConverter, streams, activeStream, protectionController, textController, protectionData, extUrlQueryInfoController, autoPlay, isStreamSwitchingInProgress, hasMediaError, hasInitialisationError, mediaSource, videoModel, playbackController, serviceDescriptionController, mediaPlayerModel, customParametersModel, isPaused, initialPlayback, initialSteeringRequest, playbackEndedTimerInterval, bufferSinks, preloadingStreams, settings, firstLicenseIsFetched, waitForPlaybackStartTimeout, providedStartTime, seekingTime, errorInformation;
+  let instance, logger, capabilities, capabilitiesFilter, manifestUpdater, manifestLoader, manifestModel, adapter, dashMetrics, mediaSourceController, timeSyncController, contentSteeringController, baseURLController, segmentBaseController, uriFragmentModel, abrController, throughputController, mediaController, eventController, initCache, errHandler, timelineConverter, streams, activeStream, protectionController, textController, protectionData, extUrlQueryInfoController, autoPlay, isStreamSwitchingInProgress, hasMediaError, hasInitialisationError, mediaSource, videoModel, playbackController, serviceDescriptionController, mediaPlayerModel, customParametersModel, isPaused, initialPlayback, initialSteeringRequest, playbackEndedTimerInterval, preloadingStreams, settings, firstLicenseIsFetched, waitForPlaybackStartTimeout, providedStartTime, seekingTime, errorInformation;
   function setup() {
     logger = (0,_core_Debug_js__WEBPACK_IMPORTED_MODULE_8__["default"])(context).getInstance().getLogger(instance);
     timeSyncController = (0,_TimeSyncController_js__WEBPACK_IMPORTED_MODULE_11__["default"])(context).getInstance();
@@ -61664,6 +62099,7 @@ function StreamController() {
       });
       let keepBuffers = false;
       let representationsFromPreviousPeriod = [];
+      let sourceBufferSinksFromPreviousPeriod = _getSourceBufferSinksFromPreviousPeriod(previousStream);
       activeStream = stream;
       if (previousStream) {
         keepBuffers = _canSourceBuffersBeKept(stream, previousStream);
@@ -61686,13 +62122,15 @@ function StreamController() {
         _openMediaSource({
           seekTime,
           keepBuffers,
+          sourceBufferSinksFromPreviousPeriod,
           streamActivated: false,
           representationsFromPreviousPeriod
         });
       } else {
         _activateStream({
           seekTime,
-          keepBuffers
+          keepBuffers,
+          sourceBufferSinksFromPreviousPeriod
         });
       }
     } catch (e) {
@@ -61758,11 +62196,7 @@ function StreamController() {
    */
   function _activateStream(inputParameters) {
     const representationsFromPreviousPeriod = inputParameters.representationsFromPreviousPeriod || [];
-    activeStream.activate(mediaSource, inputParameters.keepBuffers ? bufferSinks : undefined, representationsFromPreviousPeriod).then(sinks => {
-      if (sinks) {
-        bufferSinks = sinks;
-      }
-
+    activeStream.activate(mediaSource, inputParameters.sourceBufferSinksFromPreviousPeriod, representationsFromPreviousPeriod).then(() => {
       // Set the initial time for this stream in the StreamProcessor
       if (!isNaN(inputParameters.seekTime)) {
         eventBus.trigger(_core_events_Events_js__WEBPACK_IMPORTED_MODULE_5__["default"].SEEK_TARGET, {
@@ -61784,6 +62218,20 @@ function StreamController() {
     return previousStreamProcessors.map(streamProcessor => {
       return streamProcessor.getRepresentation();
     });
+  }
+  function _getSourceBufferSinksFromPreviousPeriod(previousStream) {
+    const sourceBufferSinkMap = new Map();
+    if (!previousStream) {
+      return sourceBufferSinkMap;
+    }
+    const previousStreamProcessors = previousStream ? previousStream.getStreamProcessors() : [];
+    previousStreamProcessors.forEach(streamProcessor => {
+      const sourceBufferSink = streamProcessor.getBuffer();
+      if (sourceBufferSink) {
+        sourceBufferSinkMap.set(sourceBufferSink.getType(), sourceBufferSink);
+      }
+    });
+    return sourceBufferSinkMap;
   }
 
   /**
@@ -61942,15 +62390,18 @@ function StreamController() {
    */
   function _onStreamCanLoadNext(nextStream) {
     let previousStream = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-    if (mediaSource && !nextStream.getPreloaded()) {
-      let seamlessPeriodSwitch = _canSourceBuffersBeKept(nextStream, previousStream);
-      if (seamlessPeriodSwitch) {
-        const representationsFromPreviousPeriod = _getRepresentationsFromPreviousPeriod(previousStream);
-        nextStream.startPreloading(mediaSource, bufferSinks, representationsFromPreviousPeriod).then(() => {
-          preloadingStreams.push(nextStream);
-        });
-      }
+    if (!mediaSource || nextStream.getPreloaded()) {
+      return;
     }
+    let seamlessPeriodSwitch = _canSourceBuffersBeKept(nextStream, previousStream);
+    if (!seamlessPeriodSwitch) {
+      return;
+    }
+    const representationsFromPreviousPeriod = _getRepresentationsFromPreviousPeriod(previousStream);
+    const previousSourceBufferSinks = _getSourceBufferSinksFromPreviousPeriod(previousStream);
+    nextStream.startPreloading(mediaSource, previousSourceBufferSinks, representationsFromPreviousPeriod).then(() => {
+      preloadingStreams.push(nextStream);
+    });
   }
 
   /**
@@ -62138,9 +62589,7 @@ function StreamController() {
 
       // If the preloading for the current stream is not scheduled, but its predecessor has finished buffering we can start prebuffering this stream
       if (!stream.getPreloaded() && previousStream.getHasFinishedBuffering()) {
-        if (mediaSource) {
-          _onStreamCanLoadNext(stream, previousStream);
-        }
+        _onStreamCanLoadNext(stream, previousStream);
       }
       i += 1;
     }
@@ -64818,6 +65267,9 @@ function CmcdModel() {
     }
     if (mediaType === _streaming_constants_Constants_js__WEBPACK_IMPORTED_MODULE_5__["default"].AUDIO) {
       ot = _svta_common_media_library_cmcd_CmcdObjectType__WEBPACK_IMPORTED_MODULE_11__.CmcdObjectType.AUDIO;
+    }
+    if (request.mediaType === _streaming_constants_Constants_js__WEBPACK_IMPORTED_MODULE_5__["default"].ENHANCEMENT) {
+      ot = _svta_common_media_library_cmcd_CmcdObjectType__WEBPACK_IMPORTED_MODULE_11__.CmcdObjectType.OTHER;
     }
     if (mediaType === _streaming_constants_Constants_js__WEBPACK_IMPORTED_MODULE_5__["default"].TEXT) {
       if (request.representation.mediaInfo.mimeType === 'application/mp4') {
@@ -70459,6 +70911,7 @@ function AbandonRequestsRule(config) {
       const totalBytesForOptimalRepresentation = request.bytesTotal * optimalRepresentationForBitrate.bitrateInKbit / currentRequestedRepresentation.bitrateInKbit;
       if (remainingBytesToDownload > totalBytesForOptimalRepresentation) {
         switchRequest.representation = optimalRepresentationForBitrate;
+        switchRequest.priority = settings.get().streaming.abr.abandonRequestsRule.priority;
         switchRequest.reason = {
           throughputInKbit,
           message: `[AbandonRequestRule][${mediaType} is asking to abandon and switch to quality to ${optimalRepresentationForBitrate.absoluteIndex}. The measured bandwidth was ${throughputInKbit} kbit/s`
@@ -70501,6 +70954,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _MediaPlayerEvents_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../MediaPlayerEvents.js */ "./src/streaming/MediaPlayerEvents.js");
 /* harmony import */ var _constants_Constants_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../constants/Constants.js */ "./src/streaming/constants/Constants.js");
 /* harmony import */ var _controllers_AbrController_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../controllers/AbrController.js */ "./src/streaming/controllers/AbrController.js");
+/* harmony import */ var _core_Settings_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../../core/Settings.js */ "./src/core/Settings.js");
 /**
  * The copyright in this software is being made available under the BSD License,
  * included below. This software may be subject to other third party and contributor
@@ -70545,6 +70999,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 // BOLA_STATE_ONE_BITRATE   : If there is only one bitrate (or initialization failed), always return NO_CHANGE.
 // BOLA_STATE_STARTUP       : Set placeholder buffer such that we download fragments at most recently measured throughput.
 // BOLA_STATE_STEADY        : Buffer primed, we switch to steady operation.
@@ -70566,9 +71021,10 @@ function BolaRule(config) {
   const mediaPlayerModel = config.mediaPlayerModel;
   const eventBus = (0,_core_EventBus_js__WEBPACK_IMPORTED_MODULE_4__["default"])(context).getInstance();
   const abrController = (0,_controllers_AbrController_js__WEBPACK_IMPORTED_MODULE_9__["default"])(context).getInstance();
-  let instance, logger, bolaStateDict;
+  let instance, logger, settings, bolaStateDict;
   function setup() {
     logger = (0,_core_Debug_js__WEBPACK_IMPORTED_MODULE_6__["default"])(context).getInstance().getLogger(instance);
+    settings = (0,_core_Settings_js__WEBPACK_IMPORTED_MODULE_10__["default"])(context).getInstance();
     resetInitialSettings();
     eventBus.on(_MediaPlayerEvents_js__WEBPACK_IMPORTED_MODULE_7__["default"].BUFFER_EMPTY, _onBufferEmpty, instance);
     eventBus.on(_MediaPlayerEvents_js__WEBPACK_IMPORTED_MODULE_7__["default"].PLAYBACK_SEEKING, _onPlaybackSeeking, instance);
@@ -71059,6 +71515,7 @@ function BolaRule(config) {
           _handleBolaStateBad(switchRequest, rulesContext, bolaState);
           break;
       }
+      switchRequest.priority = settings.get().streaming.abr.rules.bolaRule.priority;
       return switchRequest;
     } catch (e) {
       logger.error(e);
@@ -71162,6 +71619,7 @@ function DroppedFramesRule() {
     }
     if (newRepresentation) {
       switchRequest.representation = newRepresentation;
+      switchRequest.priority = settings.get().streaming.abr.rules.droppedFramesRule.priority;
       switchRequest.reason = {
         droppedFrames,
         message: `[DroppedFramesRule]: Switching to index ${newRepresentation.absoluteIndex}. Dropped Frames: ${droppedFrames}, Total Frames: ${totalFrames}`
@@ -71291,6 +71749,7 @@ function InsufficientBufferRule(config) {
         return switchRequest;
       }
       switchRequest.representation = abrController.getOptimalRepresentationForBitrate(mediaInfo, bitrate, true);
+      switchRequest.priority = settings.get().streaming.abr.rules.insufficientBufferRule.priority;
       switchRequest.reason = {
         message: '[InsufficientBufferRule]: Limiting maximum bitrate to avoid a buffer underrun.',
         bitrate
@@ -71309,6 +71768,9 @@ function InsufficientBufferRule(config) {
       ignoreCount: segmentIgnoreCount
     };
     bufferStateDict[_constants_Constants_js__WEBPACK_IMPORTED_MODULE_5__["default"].AUDIO] = {
+      ignoreCount: segmentIgnoreCount
+    };
+    bufferStateDict[_constants_Constants_js__WEBPACK_IMPORTED_MODULE_5__["default"].ENHANCEMENT] = {
       ignoreCount: segmentIgnoreCount
     };
   }
@@ -71355,6 +71817,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _core_events_Events_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../core/events/Events.js */ "./src/core/events/Events.js");
 /* harmony import */ var _core_Debug_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../core/Debug.js */ "./src/core/Debug.js");
 /* harmony import */ var _constants_Constants_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../constants/Constants.js */ "./src/streaming/constants/Constants.js");
+/* harmony import */ var _core_Settings_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../../core/Settings.js */ "./src/core/Settings.js");
 /**
  * The copyright in this software is being made available under the BSD License,
  * included below. This software may be subject to other third party and contributor
@@ -71396,6 +71859,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 const L2A_STATE_ONE_BITRATE = 'L2A_STATE_ONE_BITRATE'; // If there is only one bitrate (or initialization failed), always return NO_CHANGE.
 const L2A_STATE_STARTUP = 'L2A_STATE_STARTUP'; // Set placeholder buffer such that we download fragments at most recently measured throughput.
 const L2A_STATE_STEADY = 'L2A_STATE_STEADY'; // Buffer primed, we switch to steady operation.
@@ -71407,6 +71871,7 @@ function L2ARule(config) {
   const context = this.context;
   const dashMetrics = config.dashMetrics;
   const eventBus = (0,_core_EventBus_js__WEBPACK_IMPORTED_MODULE_4__["default"])(context).getInstance();
+  const settings = (0,_core_Settings_js__WEBPACK_IMPORTED_MODULE_8__["default"])(context).getInstance();
   let instance, l2AStateDict, l2AParameterDict, logger;
 
   /**
@@ -71783,6 +72248,7 @@ function L2ARule(config) {
         default:
           _handleErrorState(rulesContext, switchRequest, l2AState);
       }
+      switchRequest.priority = settings.get().streaming.abr.rules.l2ARule.priority;
       return switchRequest;
     } catch (e) {
       logger.error(e);
@@ -71860,6 +72326,7 @@ function SwitchHistoryRule() {
         noDrops += switchRequests[currentPossibleRepresentation.id].noDrops;
         if (drops + noDrops >= settings.get().streaming.abr.rules.switchHistoryRule.parameters.sampleSize && drops / noDrops > settings.get().streaming.abr.rules.switchHistoryRule.parameters.switchPercentageThreshold) {
           switchRequest.representation = i > 0 && switchRequests[currentPossibleRepresentation.id].drops > 0 ? representations[i - 1] : currentPossibleRepresentation;
+          switchRequest.priority = settings.get().streaming.abr.rules.switchHistoryRule.priority;
           switchRequest.reason = {
             drops: drops,
             noDrops: noDrops,
@@ -71893,6 +72360,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _SwitchRequest_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../SwitchRequest.js */ "./src/streaming/rules/SwitchRequest.js");
 /* harmony import */ var _constants_MetricsConstants_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../constants/MetricsConstants.js */ "./src/streaming/constants/MetricsConstants.js");
 /* harmony import */ var _core_Debug_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../core/Debug.js */ "./src/core/Debug.js");
+/* harmony import */ var _core_Settings_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../core/Settings.js */ "./src/core/Settings.js");
 /**
  * The copyright in this software is being made available under the BSD License,
  * included below. This software may be subject to other third party and contributor
@@ -71927,13 +72395,15 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 function ThroughputRule(config) {
   config = config || {};
   const context = this.context;
   const dashMetrics = config.dashMetrics;
-  let instance, logger;
+  let instance, settings, logger;
   function setup() {
     logger = (0,_core_Debug_js__WEBPACK_IMPORTED_MODULE_3__["default"])(context).getInstance().getLogger(instance);
+    settings = (0,_core_Settings_js__WEBPACK_IMPORTED_MODULE_4__["default"])(context).getInstance();
   }
   function getSwitchRequest(rulesContext) {
     try {
@@ -71956,6 +72426,7 @@ function ThroughputRule(config) {
       if (abrController.getAbandonmentStateFor(streamId, mediaType) === _constants_MetricsConstants_js__WEBPACK_IMPORTED_MODULE_2__["default"].ALLOW_LOAD) {
         if (currentBufferState.state === _constants_MetricsConstants_js__WEBPACK_IMPORTED_MODULE_2__["default"].BUFFER_LOADED || isDynamic) {
           switchRequest.representation = abrController.getOptimalRepresentationForBitrate(mediaInfo, throughput, true);
+          switchRequest.priority = settings.get().streaming.abr.rules.throughputRule.priority;
           switchRequest.reason = {
             throughput,
             latency,
@@ -72680,6 +73151,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _constants_MetricsConstants_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../constants/MetricsConstants.js */ "./src/streaming/constants/MetricsConstants.js");
 /* harmony import */ var _LoLpWeightSelector_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./LoLpWeightSelector.js */ "./src/streaming/rules/abr/lolp/LoLpWeightSelector.js");
 /* harmony import */ var _constants_Constants_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../constants/Constants.js */ "./src/streaming/constants/Constants.js");
+/* harmony import */ var _core_Settings_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../../../core/Settings.js */ "./src/core/Settings.js");
 /**
  * The copyright in this software is being made available under the BSD License,
  * included below. This software may be subject to other third party and contributor
@@ -72726,17 +73198,19 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 const DWS_TARGET_LATENCY = 1.5;
 const DWS_BUFFER_MIN = 0.3;
 function LoLPRule(config) {
   config = config || {};
   let dashMetrics = config.dashMetrics;
   let context = this.context;
-  let logger, instance, learningController, qoeEvaluator;
+  let logger, settings, instance, learningController, qoeEvaluator;
   function _setup() {
     logger = (0,_core_Debug_js__WEBPACK_IMPORTED_MODULE_0__["default"])(context).getInstance().getLogger(instance);
     learningController = (0,_LearningAbrController_js__WEBPACK_IMPORTED_MODULE_2__["default"])(context).create();
     qoeEvaluator = (0,_LoLpQoEEvaluator_js__WEBPACK_IMPORTED_MODULE_3__["default"])(context).create();
+    settings = (0,_core_Settings_js__WEBPACK_IMPORTED_MODULE_8__["default"])(context).getInstance();
   }
   function getSwitchRequest(rulesContext) {
     try {
@@ -72803,7 +73277,7 @@ function LoLPRule(config) {
         throughput: throughput,
         latency: latency
       };
-      switchRequest.priority = _SwitchRequest_js__WEBPACK_IMPORTED_MODULE_4__["default"].PRIORITY.STRONG;
+      switchRequest.priority = settings.get().streaming.abr.rules.loLPRule.priority;
       scheduleController.setTimeToLoadDelay(0);
       return switchRequest;
     } catch (e) {
@@ -77126,9 +77600,10 @@ function _getNChanDolby2015(value) {
   }
 
   // see ETSI TS 103190-2, table A.27
-  // 0b001101111000000010: single channel flags
+  // 0b001100111000000010: single channel flags
   // 0b110010000110111101: channel pair flags
-  return _getNChanFromBitMask(value, [0b001101111000000010, 0b110010000110111101]);
+  // 0b000001000001000000: LFE - excluded
+  return _getNChanFromBitMask(value, [0b001100111000000010, 0b110010000110111101]);
 }
 function _getNChanDTSUHD(value) {
   if (value.length > 8) {
@@ -77703,6 +78178,10 @@ function Capabilities() {
   function runCodecSupportCheck(basicConfiguration, type) {
     if (type !== _constants_Constants_js__WEBPACK_IMPORTED_MODULE_1__["default"].AUDIO && type !== _constants_Constants_js__WEBPACK_IMPORTED_MODULE_1__["default"].VIDEO) {
       return Promise.resolve();
+    }
+    const enhancementCodecs = settings.get().streaming.enhancement.codecs;
+    if (settings.get().streaming.enhancement.enabled && enhancementCodecs.some(cdc => basicConfiguration.codec.includes(cdc))) {
+      return Promise.resolve(true);
     }
     const configurationsToTest = _getEnhancedConfigurations(basicConfiguration, type);
     if (_canUseMediaCapabilitiesApi(basicConfiguration, type)) {

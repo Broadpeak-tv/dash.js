@@ -17112,6 +17112,12 @@ __webpack_require__.r(__webpack_exports__);
    */
   VIDEO: 'video',
   /**
+   *  @constant {string} ENHANCEMENT Enhancement media type
+   *  @memberof Constants#
+   *  @static
+   */
+  ENHANCEMENT: 'enhancement',
+  /**
    *  @constant {string} AUDIO Audio media type
    *  @memberof Constants#
    *  @static
@@ -18401,18 +18407,22 @@ function ProtectionController(config) {
     return protectionModel.selectKeySystem(keySystemAccess);
   }
   function _onMediaKeysCreated(keySystem, keySystemAccess) {
-    selectedKeySystem = keySystem;
-    keySystemSelectionInProgress = false;
-    eventBus.trigger(events.KEY_SYSTEM_SELECTED, {
-      data: keySystemAccess
-    });
+    try {
+      selectedKeySystem = keySystem;
+      keySystemSelectionInProgress = false;
+      eventBus.trigger(events.KEY_SYSTEM_SELECTED, {
+        data: keySystemAccess
+      });
 
-    // Set server certificate from protData
-    var protData = _getProtDataForKeySystem(selectedKeySystem);
-    if (protData && protData.serverCertificate && protData.serverCertificate.length > 0) {
-      protectionModel.setServerCertificate(BASE64.decodeArray(protData.serverCertificate).buffer);
+      // Set server certificate from protData
+      var protData = _getProtDataForKeySystem(selectedKeySystem);
+      if (protData && protData.serverCertificate && protData.serverCertificate.length > 0) {
+        protectionModel.setServerCertificate(BASE64.decodeArray(protData.serverCertificate).buffer);
+      }
+      _handlePendingMediaTypes();
+    } catch (e) {
+      logger.error(e);
     }
-    _handlePendingMediaTypes();
   }
 
   /**
@@ -18747,11 +18757,12 @@ function ProtectionController(config) {
    * certificate
    * @memberof module:ProtectionController
    * @instance
+   * @return {Promise}
    * @fires ProtectionController#ServerCertificateUpdated
    */
   function setServerCertificate(serverCertificate) {
     _checkConfig();
-    protectionModel.setServerCertificate(serverCertificate);
+    return protectionModel.setServerCertificate(serverCertificate);
   }
 
   /**
@@ -21323,16 +21334,16 @@ function DefaultProtectionModel(config) {
     }
   }
   function setServerCertificate(serverCertificate) {
-    return new Promise(function (resolve, reject) {
+    return new Promise(function (resolve) {
       mediaKeys.setServerCertificate(serverCertificate).then(function () {
         logger.info('DRM: License server certificate successfully updated.');
         eventBus.trigger(events.SERVER_CERTIFICATE_UPDATED);
         resolve();
       }).catch(function (error) {
-        reject(error);
         eventBus.trigger(events.SERVER_CERTIFICATE_UPDATED, {
           error: new _vo_DashJSError_js__WEBPACK_IMPORTED_MODULE_12__["default"](_errors_ProtectionErrors_js__WEBPACK_IMPORTED_MODULE_11__["default"].SERVER_CERTIFICATE_UPDATED_ERROR_CODE, _errors_ProtectionErrors_js__WEBPACK_IMPORTED_MODULE_11__["default"].SERVER_CERTIFICATE_UPDATED_ERROR_MESSAGE + error.name)
         });
+        resolve();
       });
     });
   }
@@ -21992,7 +22003,9 @@ function ProtectionModel_01b(config) {
     }
   }
   function setServerCertificate(/*serverCertificate*/
-  ) {/* Not supported */
+  ) {
+    /* Not supported */
+    return Promise.resolve();
   }
   function loadKeySession(/*ksInfo*/
   ) {/* Not supported */
@@ -22536,7 +22549,9 @@ function ProtectionModel_3Feb2014(config) {
     session[api.release]();
   }
   function setServerCertificate(/*serverCertificate*/
-  ) {/* Not supported */
+  ) {
+    /* Not supported */
+    return Promise.resolve();
   }
   function loadKeySession(/*ksInfo*/
   ) {/* Not supported */
