@@ -782,6 +782,7 @@ function TextTracks(config) {
         cue.lineHeight = currentItem.lineHeight;
         cue.linePadding = currentItem.linePadding;
         cue.fontSize = currentItem.fontSize;
+        cue.text = currentItem.cueHTMLElement.innerText || ''
 
         // Resolve images sources
         if (cue.isd) {
